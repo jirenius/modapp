@@ -9,23 +9,25 @@
  * Eg. ?module.login.user=username => {module: {login: {user: "username"}}}
  */
 export let getQuery = function() {
+	if (!window || !window.location) return {};
+
 	var match,
 		part,
 		search = /([^&=]+)=?([^&]*)/g,
 		query  = window.location.search.substring(1).replace(/\+/g, " "),
 		params = {};
 
-	while( (match = search.exec(query)) !== null ) {
+	while ((match = search.exec(query)) !== null) {
 		var parts = decodeURIComponent(match[1]).split('.');
 		var o = params;
-		for( var i = 0; i < parts.length; i++ ) {
+		for (var i = 0; i < parts.length; i++) {
 			part = parts[i];
-			if( !part ) continue;
+			if (!part) continue;
 
-			if( i == parts.length-1 ) {
+			if (i == parts.length-1) {
 				o[part] = decodeURIComponent(match[2]);
 			} else {
-				if( typeof o[part] !== 'object' ) o[part] = {};
+				if (typeof o[part] !== 'object') o[part] = {};
 				o = o[part];
 			}
 		}
