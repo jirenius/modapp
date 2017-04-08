@@ -1,14 +1,14 @@
 /**
  * A module with uri helper functions
- * @module
+ * @module modapp/uri
  */
 
 /**
  * Parses the current location query string of the uri and returns it as a nested
- * object using dot-separation for the namespace.
+ * object using dot-separation for the namespace.<br>
  * Eg. ?module.login.user=username => {module: {login: {user: "username"}}}
  */
-export let getQuery = function() {
+let getQuery = function() {
 	if (typeof(window) === 'undefined' || !window.location) return {};
 
 	var match,
@@ -35,3 +35,5 @@ export let getQuery = function() {
 
 	return params;
 };
+
+export {getQuery};

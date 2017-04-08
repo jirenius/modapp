@@ -1,3 +1,12 @@
-node_modules
-docs
-lib
+/node_modules
+/docs
+/yarn.lock
+
+# Build files.
+# Put in root folder to enable 'module/obj' submodules.
+/class
+/global
+/interface
+/obj
+/uri
+/index.js

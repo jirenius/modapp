@@ -1,34 +1,34 @@
 /**
  * A module with object helper functions
- * @module
+ * @module modapp/obj
  */
 
 /**
- * Compares two values deeply using strict equal testing for non-objects (===).
+ * Compares two values deeply using strict equal testing for non-objects (===).<br>
  * Two objects are considered equal if they contain the same set of properties with equal value.
  * @param {*} a Value to compare with b.
  * @param {*} b Value to compare with a.
  * @returns {boolean} True if the values are equal, otherwise false.
  */
-export let equal = function(a, b) {
+let equal = function(a, b) {
 	// Check if a is a non-object
-	if( a === null || typeof a !== 'object' ) {
+	if (a === null || typeof a !== 'object') {
 		return a === b;
 	}
 
 	// Make sure b is also an object
-	if( b === null || typeof b !== 'object' ) {
+	if (b === null || typeof b !== 'object') {
 		return false;
 	}
 
 	var ak = Object.keys(a).sort();
 	var bk = Object.keys(b).sort();
 	
-	if( ak.length != bk.length ) return false;
-	for( let i = 0, k; (k = ak[i]); i++ ) {
-		if( k !== bk[i] ) return false;
+	if (ak.length != bk.length) return false;
+	for (let i = 0, k; (k = ak[i]); i++) {
+		if (k !== bk[i]) return false;
 
-		if( !equal(a[k], b[k]) ) {
+		if (!equal(a[k], b[k])) {
 			return false;
 		}
 	}
@@ -44,12 +44,12 @@ export let equal = function(a, b) {
  * @property {function=} assert Asserts the value. Throws an exception on failed assertion.
  */
 
-let TYPES = {
+const TYPES = {
 	"string"  : {
 		default: "",
 		assert: v => {
 			if (typeof v !== "string") {
-				throw "Not a string";
+				throw new Error("Not a string");
 			}
 		},
 		fromString: v => String(v),
@@ -58,7 +58,7 @@ let TYPES = {
 		default: null,
 		assert: v => {
 			if (typeof v !== 'string' && v !== null) {
-				throw "Not a string or null";
+				throw new Error("Not a string or null");
 			}
 		},
 		fromString: v => String(v) // Not possible to set null
@@ -66,14 +66,14 @@ let TYPES = {
 	"number"  : {
 		default: 0,
 		assert: v => {
-			if( typeof v !== 'number' ) {
-				throw "Not a number";
+			if (typeof v !== 'number') {
+				throw new Error("Not a number");
 			}
 		},
 		fromString: v => {
 			v = Number(v);
-			if( isNan(v) ) {
-				throw "Not a number format";
+			if (isNan(v)) {
+				throw new Error("Not a number format");
 			}
 			return v;
 		}
@@ -81,14 +81,14 @@ let TYPES = {
 	"?number" : {
 		default: null,
 		assert: v => {
-			if( typeof v !== 'number' && v !== null ) {
-				throw "Not a number or null";
+			if (typeof v !== 'number' && v !== null) {
+				throw new Error("Not a number or null");
 			}
 		},
 		fromString: v => {
 			v => v.toLowerCase() == 'null' ? null :  Number(v);
-			if( isNan(v) ) {
-				throw "Not a number format";
+			if (isNan(v)) {
+				throw new Error("Not a number format");
 			}
 			return v;
 		}
@@ -96,18 +96,18 @@ let TYPES = {
 	"boolean" : {
 		default: false,
 		assert: v => {
-			if( typeof v !== 'boolean' ) {
-				throw "Not a boolean";
+			if (typeof v !== 'boolean') {
+				throw new Error("Not a boolean");
 			}
 		},
 		fromString: v => {
 			v = v.toLowerCase();
-			if( v == 'true' || v == '1' || v == 'yes' ) {
+			if (v == 'true' || v == '1' || v == 'yes') {
 				v = true;
-			} else if( v == 'false' || v == '0' || v == 'no') {
+			} else if (v == 'false' || v == '0' || v == 'no') {
 				v = false;
 			} else {
-				throw "Not a boolean format";
+				throw new Error("Not a boolean format");
 			}
 			return v;
 		}
@@ -116,19 +116,19 @@ let TYPES = {
 		default: null,
 		assert: v => {
 			if (typeof v !== 'boolean' && v !== null) {
-				throw "Not a boolean or null";
+				throw new Error("Not a boolean or null");
 			}
 		},
 		fromString: v => {
 			v = v.toLowerCase();
-			if( v == 'true' || v == '1' || v == 'yes' ) {
+			if (v == 'true' || v == '1' || v == 'yes') {
 				v = true;
-			} else if( v == 'false' || v == '0' || v == 'no') {
+			} else if (v == 'false' || v == '0' || v == 'no') {
 				v = false;
-			} else if( v == 'null' ) {
+			} else if (v == 'null') {
 				v = null;
 			} else {
-				throw "Not a nullable boolean format";
+				throw new Error("Not a nullable boolean format");
 			}
 			return v;
 		}
@@ -137,7 +137,7 @@ let TYPES = {
 		default: null,
 		assert: v => {
 			if (typeof v !== 'object' || v === null) {
-				throw "Not an object";
+				throw new Error("Not an object");
 			}
 		},
 		fromString: v => {
@@ -148,7 +148,7 @@ let TYPES = {
 		default: null,
 		assert: v => {
 			if (typeof v !== 'object') {
-				throw "Not an object or null";
+				throw new Error("Not an object or null");
 			}
 		},
 		fromString: v => {
@@ -165,40 +165,40 @@ let TYPES = {
  * @param {boolean} strict Strict flag. If true, exceptions will be thrown on errors. If false, errors will be ignored. Default is true.
  * @returns {?Object.<string, *>} Key/value object where the key is the updated properties and the value is the old values.
  */
-export let update = function(target, source, def, strict = true) {
-	if( !source || typeof source != 'object' ) return null;
-	if( !def || typeof def != 'object' ) throw "Invalid definition";
+let update = function(target, source, def, strict = true) {
+	if (!source || typeof source != 'object') return null;
+	if (!def || typeof def != 'object') throw new Error("Invalid definition");
 
 	let updated = false;
 	let updateObj = {};
 
-	for( let key in def ) {
+	for (let key in def) {
 		let d = def[key];
-		if( typeof d === 'string' ) {
+		if (typeof d === 'string') {
 			d = {type: d};
 		}
 
 		let t = TYPES[d.type];
-		if( !t ) {
-			throw "Invalid definition type: " + d.type;
+		if (!t) {
+			throw new Error("Invalid definition type: " + d.type);
 		}
 
 		// Check if target has any value set. If not, use default.
-		if( !target.hasOwnProperty(key) ) {
+		if (!target.hasOwnProperty(key)) {
 			updated = true;
 			updateObj[key] = undefined;
 			target[key] = d.hasOwnProperty('default') ? d.default : t.default;
 		}
 
 		// Check if source has value for the property. If not, continue to next property.
-		if( !source.hasOwnProperty(key) ) {
+		if (!source.hasOwnProperty(key)) {
 			continue;
 		}
 
 		let v = source[key];
 		try {
 			// Convert from string
-			if( typeof v === "string" ) {
+			if (typeof v === "string") {
 				v = t.fromString(v);
 			}
 
@@ -206,24 +206,24 @@ export let update = function(target, source, def, strict = true) {
 			t.assert(v);
 
 			// Definition assertion
-			if( d.assert ) {
+			if (d.assert) {
 				d.assert(v);
 			}
 
 			// Check if the property value differs and set it as updated
-			if( target[key] !== v ) {
+			if (target[key] !== v) {
 				updated = true;
 				updateObj[key] = target[key];
 				target[key] = v;
 			}
-		} catch(ex) {
-			if( strict ) {
+		} catch (ex) {
+			if (strict) {
 				throw ex;
 			}
 		}
 	}
 
-	if( !updated ) return null;
+	if (!updated) return null;
 
 	return updateObj;
 };
@@ -235,8 +235,10 @@ export let update = function(target, source, def, strict = true) {
  * @param {boolean} strict Strict flag. If true, exceptions will be thrown on errors. If false, errors will be ignored. Default is false.
  * @returns {object} Copy of the object
  */
-export let copy = function(source, def, strict = false) {
+let copy = function(source, def, strict = false) {
 	let copy = {};
 	update(copy, source, def, strict);
 	return copy;
 };
+
+export {equal, update, copy};

@@ -1,10 +1,10 @@
 {
 	"name": "modapp",
-	"version": "2.0.3",
+	"version": "2.0.4",
 	"description": "A thin framework for building completely modular web applications.",
-	"main": "./lib/index.js",
+	"main": "./index.js",
 	"scripts": {
-		"build": "babel src --presets babel-preset-es2015 --out-dir lib"
+		"build": "babel src --presets babel-preset-es2015 --out-dir ./"
 	},
 	"repository": {
 		"type": "git",

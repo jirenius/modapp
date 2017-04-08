@@ -1,5 +1,4 @@
-import eventBus from '../func/eventBus.js';
-import * as uri from '../func/uri.js';
+import * as uri from '../uri';
 
 /**
  * A modular app container loading, storing, and linking app modules together.
@@ -12,12 +11,14 @@ class App {
 	 * The optional module configuration may be overridden using the url query.<br>
 	 * Eg. "?login.auto=true" would pass {auto: "true"} as parameter to the login app module.
 	 * @param {Object.<string,object>} [moduleConfig] App module configuration key-value object where the key is the name of the module and the value is the parameters passed to the module on creation.
+	 * @param {object} [opt] App configuration
+	 * @param {EventBus} [opt.eventBus] Event bus to be used by the app modules
 	 */
-	constructor(moduleConfig) {
+	constructor(moduleConfig, opt = {}) {
 		this._moduleConfig = moduleConfig || {};
 
-		// TODO Allow custom eventBus to be passed as argument
-		this._eventBus = eventBus;
+		this._eventBus = opt.eventBus || null;
+		this._moduleLoaded = opt.moduleLoaded;
 
 		this._module = {};
 		this._moduleClass = null;
@@ -28,19 +29,19 @@ class App {
 	}
 
 	/**
-	 * The event bus used by the App. By default it uses {@link eventBus}.
+	 * The event bus used by the App
 	 */
 	get eventBus() {
 		return this._eventBus;
 	}
 
 	/**
-	 * Attach an event handler function for one or more app events.
+	 * Attach an event handler function for one or more app events.<br>
 	 * @param {?string} events One or more space-separated events. Null means any event.
 	 * @param {EventBus~eventCallback} handler A function to execute when the event is emitted.
 	 */
 	on(events, handler) {
-		this.event.on(this, events, handler, 'app');
+		this._eventBus.on(this, events, handler, 'app');
 	}
 
 	/**
@@ -49,7 +50,7 @@ class App {
 	 * @param {function} [handler] An optional handler function. The handler will only be remove if it is the same handler.
 	 */
 	off(events, handler) {
-		this.event.off(this, events, handler, 'app');
+		this._eventBus.off(this, events, handler, 'app');
 	}
 
 	/**
@@ -103,7 +104,7 @@ class App {
 	 * @returns {Promise.<Object.<string,AppModule>>} Promise of a key/value object with keys being the module names and the value being the app module instances.
 	 */
 	require(moduleNames) {
-		if( !moduleNames ) return Promise.resolve({});
+		if (!moduleNames) return Promise.resolve({});
 
 		return new Promise(this._requireExec.bind(this, moduleNames));
 	}
@@ -111,14 +112,14 @@ class App {
 	/** @private */
 	_requireExec(moduleNames, resolve, reject) {
 		// Is a require call in progress of creating module instances?
-		if( this._queue ) {
+		if (this._queue) {
 			// Queue this call for later
 			this._queue.push([moduleNames, resolve, reject]);
 			return;
 		}
 		this._queue = [];
 
-		if( typeof moduleNames == 'string' ) {
+		if (typeof moduleNames == 'string') {
 			moduleNames = [moduleNames];
 		}
 
@@ -130,9 +131,9 @@ class App {
 		moduleNames.forEach(modName => {
 			let mod = this._module[modName];
 
-			if( !mod ) {
+			if (!mod) {
 				let modClass = this._moduleClass ? this._moduleClass[modName] : null;
-				if( !modClass ) throw "Module " + modName + " not found";
+				if (!modClass) throw "Module " + modName + " not found";
 
 				// Query based params has priority over configuration provided on ModApp creation
 				let params = Object.assign({}, this._moduleConfig[modName], modParams[modName]);
@@ -186,7 +187,7 @@ class App {
 
 	/** @private */
 	_renderScreen() {
-		if( !this._el || !this._component ) return;
+		if (!this._el || !this._component) return;
 
 		this._component.render(this._el);
 	}
