@@ -1,6 +1,6 @@
 {
 	"name": "modapp",
-	"version": "2.0.2",
+	"version": "2.0.3",
 	"description": "A thin framework for building completely modular web applications.",
 	"main": "./lib/index.js",
 	"scripts": {

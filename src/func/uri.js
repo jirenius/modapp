@@ -9,7 +9,7 @@
  * Eg. ?module.login.user=username => {module: {login: {user: "username"}}}
  */
 export let getQuery = function() {
-	if (!window || !window.location) return {};
+	if (typeof(window) === 'undefined' || !window.location) return {};
 
 	var match,
 		part,
