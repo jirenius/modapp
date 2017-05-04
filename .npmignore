@@ -1,3 +1,7 @@
 src
 docs
+coverage
 yarn.lock
+*.test.js
+.babelrc
+.gitignore

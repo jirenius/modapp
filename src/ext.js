@@ -3,7 +3,7 @@
  * @module modapp
  */
 
-import app from './class/App.js';
+import appExt from './class/AppExt.js';
 
 // Interface
 import './interface/AppModule.js';
@@ -12,8 +12,8 @@ import './interface/Readyable.js';
 
 /**
  * App class.
- * @type {App}
+ * @type {AppExt}
  */
-let App = app;
+let AppExt = appExt;
 
-export {App};
+export {AppExt};

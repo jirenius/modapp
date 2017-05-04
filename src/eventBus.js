@@ -3,7 +3,7 @@
  * @module modapp/eventBus
  */
 
-import EventBus from '../class/EventBus.js';
+import EventBus from './class/EventBus.js';
 
 /**
  * EventBus instance.

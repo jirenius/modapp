@@ -3,8 +3,8 @@
  * @module modapp/l10n
  */
 
-import L10n from '../class/L10n.js';
-import eventBus from '../eventBus';
+import L10n from './class/L10n.js';
+import eventBus from './eventBus.js';
 
 /**
  * L10n instance using the {@link module:modapp/eventBus} to emit locale changes.

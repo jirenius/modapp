@@ -7,18 +7,25 @@
  * Parses the current location query string of the uri and returns it as a nested
  * object using dot-separation for the namespace.<br>
  * Eg. ?module.login.user=username => {module: {login: {user: "username"}}}
+ * @param {string} namespace Dot-separated namespace to use as root.
  */
-let getQuery = function() {
+let getQuery = function(namespace) {
 	if (typeof(window) === 'undefined' || !window.location) return {};
-
+	
 	var match,
 		part,
 		search = /([^&=]+)=?([^&]*)/g,
 		query  = window.location.search.substring(1).replace(/\+/g, " "),
 		params = {};
 
+	namespace = (namespace || "").replace(/([^\.])$/, '$1.');
+
 	while ((match = search.exec(query)) !== null) {
-		var parts = decodeURIComponent(match[1]).split('.');
+		var key = decodeURIComponent(match[1]);
+		if (!key.startsWith(namespace)) continue;
+		key = key.substr(namespace.length);
+		
+		var parts = decodeURIComponent(key).split('.');
 		var o = params;
 		for (var i = 0; i < parts.length; i++) {
 			part = parts[i];
