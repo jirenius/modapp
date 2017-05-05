@@ -1,6 +1,6 @@
 /**
  * A thin framework for building completely modular web applications.
- * @module modapp
+ * @module modapp/ext
  */
 
 import appExt from './class/AppExt.js';

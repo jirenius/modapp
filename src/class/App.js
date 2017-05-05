@@ -33,7 +33,7 @@ class App {
 	 * The optional module configuration may be overridden using the url query.<br>
 	 * Eg. "?login.auto=true" would pass {auto: "true"} as parameter to the login app module.
 	 * If a module configuration has the property "active" set to the strings "false", "no",
-	 * or "0", or has value false or 0, it will automatically be deactivated on load.  
+	 * or "0", or has value false or 0, it will automatically be deactivated on load.
 	 * @param {Object.<string,object>} [moduleConfig] App module configuration key-value object where the key is the name of the module and the value is the parameters passed to the module on creation.
 	 * @param {object} [opt] App configuration
 	 * @param {App~moduleClassCallback} [opt.moduleClass] Callback for fetching the {@link AppModule} class for a given module name.
@@ -64,14 +64,14 @@ class App {
 	 */
 	loadBundle(bundle) {
 		var i, modName, modNames = Object.keys(bundle);
-			
+
 		// Put all module classes in _moduleClass cache
 		for (i = 0; i < modNames.length; i++) {
 			modName = modNames[i];
 			if (this._moduleClass[modName]) {
 				throw new Error(`Module ${modName} already in cache. Handling not implemented yet`);
-			}	
-			
+			}
+
 			this._moduleClass[modName] = bundle[modName];
 		}
 
@@ -93,6 +93,7 @@ class App {
 	 * Converts an array of ModuleInstance's to an {@link App~loadResults} object.
 	 * @param {Array.<ModuleInstance>} modInsts Array of ModuleInstance objects.
 	 * @returns {App~loadResults} Load results object.
+	 * @private
 	 */
 	_toLoadResults(modInsts) {
 		var modules = {}, errors = null, error, modInst;
@@ -128,7 +129,7 @@ class App {
 	 * Any other module that has been blocked loading due to being dependant upon the
 	 * deactivated module, will also be loaded.
 	 * @param {string} moduleName Name of module to activate.
-	 * @returns {Promise.<AppModule, Error>} Promise of the app module. 
+	 * @returns {Promise.<AppModule, Error>} Promise of the app module.
 	 */
 	activate(moduleName) {
 		let modInst = this._module[moduleName];
@@ -142,7 +143,8 @@ class App {
 	/**
 	 * Reloads an instance and any module blocked by it.
 	 * @param {ModuleInstance} modInst Module instance
-	 * @returns {Promise.<AppModule, Error>} Promise of the app module. 
+	 * @returns {Promise.<AppModule, Error>} Promise of the app module.
+	 * @private
 	 */
 	_reloadInstance(modInst) {
 		if (modInst.state == 'ready') {
@@ -162,7 +164,7 @@ class App {
 			if (modInst.error) {
 				return Promise.reject(modInst.error);
 			}
-			
+
 			// Take the blocked dependants and try to reload them
 			let deps = modInst.dependants;
 			let promises = [];
@@ -236,7 +238,7 @@ class App {
 		for (let i = 0; i < modNames.length; i++) {
 			promises.push(this._loadInstance(modNames[i], loadedBy));
 		}
-		
+
 		return Promise.all(promises);
 	}
 
@@ -246,6 +248,7 @@ class App {
 	 * @param {string} modName Name of the module.
 	 * @param {string} [loadedBy] Name of module loading the instance.
 	 * @returns {Promise.<ModuleInstance>} A promise of the module instance. Will always resolve.
+	 * @private
 	 */
 	_loadInstance(modName, loadedBy) {
 		let checkActiveFlag = true;
@@ -267,7 +270,7 @@ class App {
 		} else {
 			modInst.setExplicit();
 		}
-		
+
 		if (!modInst.promise) {
 			modInst.promise = this._getModuleClass(modName)
 			.then(modClass => {
@@ -294,10 +297,11 @@ class App {
 	 * Gets a module class from the cache, or fetches it using
 	 * @param {string} modName Name of the module.
 	 * @returns {Promise.<Class, Error>} Promise of a AppModule class.
+	 * @private
 	 */
 	_getModuleClass(modName) {
 		// Check if module is already loaded
-		let modClass = this._moduleClass[modName]; 
+		let modClass = this._moduleClass[modName];
 		if (modClass) {
 			return Promise.resolve(modClass);
 		}
@@ -312,15 +316,16 @@ class App {
 				return modClass;
 			});
 		}
-		
+
 		return Promise.reject(new Error("No module class callback available."));
 	}
-	
+
 	/**
 	 * Tries to create an instance of a module
 	 * @param {ModuleInstance} modInst Module instance object
 	 * @param {Class.<AppModule>} modClass AppModule class
 	 * @returns {Promise.<ModuleInstance>} A promise of the module instance. Will always resolve.
+	 * @private
 	 */
 	_createInstance(modInst, modClass, params) {
 		// Create new module instance
@@ -359,16 +364,16 @@ class App {
 		return this._loadInstances(
 			modInst.requires,
 			modInst.name
-		).then(modInsts => {			
+		).then(modInsts => {
 			let result = this._toLoadResults(modInsts);
-			
+
 			if (result.errors) {
 				modInst.setState('blocked', result.errors);
 				// Clean up any implicitly loaded module
-				this._cleanImplicits(Object.keys(result.modules));                
+				this._cleanImplicits(Object.keys(result.modules));
 			} else {
 				modInst.setState('ready');
-				
+
 				try {
 					// Store error in a context that can be thrown later
 					require.callback(result.modules);
@@ -397,9 +402,15 @@ class App {
 		}
 	}
 
+	/**
+	 * Checks if a module instance is implicit and disposes it
+	 * if it has no active dependants.
+	 * @param {ModuleInstance} modInst
+	 * @private
+	 */
 	_cleanImplicit(modInst) {
 		if (modInst.explicit) return;
-	
+
 		let d = modInst.dependants;
 		for (let i = 0; i < d.length; i++) {
 			if (this._module[d[i]].isActive()) {
@@ -418,7 +429,7 @@ class App {
 	 */
 	_disposeInstance(modInst, state) {
 		let instance = modInst.instance;
-		
+
 		if (state === 'blocked') {
 			let blockedBy = {};
 			for (let i = 0; i < modInst.requires.length; i++ ) {
@@ -441,7 +452,7 @@ class App {
 			var depName = modInst.dependants[i];
 			this._disposeInstance(this._module[depName], 'blocked');
 		}
-		
+
 		// Dispose instance
 		if (instance.dispose) {
 			instance.dispose();
@@ -449,7 +460,7 @@ class App {
 
 		this._cleanImplicits(modInst.requires);
 	}
-	
+
 
 	/**
 	 * Checks if value is true. Returns true unless the value is any of the following:<br>
@@ -471,12 +482,14 @@ class App {
 			}
 			break;
 		}
-		
+
 		return true;
 	}
 
 	/**
-	 * Returns module parameters based on configuration and query values
+	 * Returns module parameters based on configuration and query values for given module name
+	 * @param {string} modName Name of module
+	 * @returns {object} Configuration object
 	 * @private
 	 */
 	_getModuleParams(modName) {
@@ -487,8 +500,9 @@ class App {
 	/**
 	 * Checks for circular references by traversing the require tree
 	 * for all modules in 'require' state.
-	 * @param {Array.<string>} modInst Module instance to check
+	 * @param {ModuleInstance} modInst Module instance to check
 	 * @param {Array.<string>} [chain] Require chain
+	 * @private
 	 */
 	_checkCircularRef(modInst, chain = []) {
 		let m, req = modInst.requires;
