@@ -26,9 +26,10 @@ class ModuleInstance {
 		this.requires = moduleNames;
 	}
 
-	
 	addDependant(moduleName) {
-		this.dependants.push(moduleName);
+		if (this.dependants.indexOf(moduleName) === -1) {
+			this.dependants.push(moduleName);
+		}
 	}
 
 	setState(state, param) {

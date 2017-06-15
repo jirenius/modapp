@@ -72,6 +72,12 @@ describe('App', () => {
 		mod[name] = null;
 
 		return function(app, params) {
+			if (mod[name] && mod[name].state !== 'disposed' && mod[name].state !== 'created') {
+				let err = "instance ["+ name +"] is already created with state: " + mod[name].state;
+				console.error(err);
+				throw new Error(err);
+			}
+
 			mod[name] = this;
 			insts.push(this);
 		
@@ -642,6 +648,21 @@ describe('App', () => {
 				app.deactivate('a');
 				
 				verifyModules([]);
+			});
+		});
+
+		it("unloads dependant module on deactivation, reloading only a single instance", () => {
+			return app.loadBundle({
+				a: createModule('a'),
+				b: createModule('b', ['a'])
+			}).then(result => {
+				app.deactivate('b');
+				app.activate('b').then(result => {
+					app.deactivate('a');
+					app.activate('a').then(result => {
+						verifyModules(['a', 'b']);
+					})
+				});
 			});
 		});
 	

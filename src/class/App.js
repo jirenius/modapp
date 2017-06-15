@@ -428,6 +428,9 @@ class App {
 	 * @private
 	 */
 	_disposeInstance(modInst, state) {
+		// Do nothing with instance if deactivated
+		if (modInst.state === 'deactivated') return;
+
 		let instance = modInst.instance;
 
 		if (state === 'blocked') {
