@@ -28,21 +28,22 @@ class L10n {
 	 * @returns {string} Translated string.
 	 */
 	t(key, defaultStr, params) {
-		let preParams = 2;
+		let preParams = 2, defaultParams;
 
-		if( key instanceof LocaleString ) {
+		if (key instanceof LocaleString) {
 			defaultStr = key.defaultStr;
+			defaultParams = key.defaultParams;
 			key = key.key;
 			preParams = 1;
 		} else {
-			if( typeof key !== 'string' ) {
+			if (typeof key !== 'string') {
 				console.error(`Translation key is of type ${typeof key} instead of string:`, key);
 				return defaultStr;
 			}
 
 			// If we only get one argument, we can assume
 			// it is an already translated string.
-			if( arguments.length <= 1 ) return key;
+			if (arguments.length <= 1) return key;
 
 			key = this._ns + key;
 		}
@@ -50,15 +51,19 @@ class L10n {
 		let s = defaultStr;
 		params = arguments[preParams];
 
-		if( typeof params != "undefined" ) {
-			if( typeof params == "string" ) {
+		if (typeof params != "undefined" || defaultParams) {
+			if (typeof params == "string") {
 				params = Array.prototype.slice.call(arguments, preParams);
 			}
 
-			s = s.replace(/{([^}]+)}/g, function(match, idx) {
-				return typeof params[idx] != 'undefined'
-				? params[idx]
-				: '???';
+			if (defaultParams) {
+				params = Object.assign({}, defaultParams, params);
+			}
+
+			s = s.replace(/{([^}]+)}/g, function (match, idx) {
+				return typeof params[idx] != 'undefined' ?
+					params[idx] :
+					'???';
 			});
 		}
 
@@ -68,10 +73,29 @@ class L10n {
 	/**
 	 * Returns a LocaleString that can be passed to the t method for translation.
 	 * @param {string} key Key id of string to translate.
-	 * @param {string} defaultStr Default string tranlation.
+	 * @param {string} defaultStr Default string translation.
+	 * @param {object} [defaultParams] Default parameters.
 	 */
-	l(key, defaultStr) {
-		return new LocaleString(this._ns + key, defaultStr);
+	l(key, defaultStr, defaultParams) {
+		if (key instanceof LocaleString) {
+			if (typeof defaultStr !== "undefined") {
+				if (typeof defaultStr === "string") {
+					defaultStr = Array.prototype.slice.call(arguments, 1);
+				}
+			}
+
+			defaultParams = key.defaultParams && defaultStr
+				? Object.assign({}, key.defaultParams, defaultStr)
+				: key.defaultParams || defaultStr;
+			defaultStr = key.defaultStr;
+			key = key.key;
+		} else if (typeof defaultParams !== "undefined") {
+			if (typeof defaultParams === "string") {
+				defaultParams = Array.prototype.slice.call(arguments, 2);
+			}
+		}
+
+		return new LocaleString(this._ns + key, defaultStr, defaultParams);
 	}
 
 	/**
@@ -98,37 +122,39 @@ class L10n {
 	/**
 	 * Removes an l10n event handler.
 	 * @param {?string} events One or more space-separated events. Null means any event.
-	 * @param {function=} handler An optional handler function. The handler will only be remove if it is the same handler.
+	 * @param {function} [handler] An optional handler function. The handler will only be remove if it is the same handler.
 	 */
 	off(events, handler) {
 		this._eventBus.off(this, events, handler, 'l10n');
 	}
 
-    /**
-     * Sets locale
-     * @param {string} locale Locale language tag
+	/**
+	 * Sets locale
+	 * @param {string} locale Locale language tag
 	 * @fires "l10n.localeUpdate"
-     */
+	 */
 	setLocale(locale) {
-		if( locale === this._locale ) return;
+		if (locale === this._locale) return;
 
 		// TODO
 		// Load the new locale language pack
 		this._locale = locale;
-		
+
 		/**
-		 * L10N locale update event with the new locale. 
+		 * L10N locale update event with the new locale.
 		 * @memberof L10n
 		 * @event "l10n.localeUpdate"
 		 * @type {object}
 		 * @property {string} locale Locale language tag of new locale
 		 */
-		this._eventBus.emit(this, 'l10n.localeUpdate', {locale: this._locale});
+		this._eventBus.emit(this, 'l10n.localeUpdate', {
+			locale: this._locale
+		});
 	}
 
 	/**
 	 * Checks if a value is and instance of {@link LocaleString}.
-	 * @param {*} str 
+	 * @param {*} str
 	 */
 	isLocaleString(str) {
 		return str instanceof LocaleString;

@@ -1,10 +1,12 @@
 const rm = function(hs, t, h) {
-	if( !hs ) return;
+	if (!hs) {
+		return;
+	}
 
 	var e, i = hs.length;
-	while( i-- ) {
+	while (i--) {
 		e = hs[i];
-		if( (t === null || e.t === t) && (h === null || h === e.h) ) {
+		if ((t === null || e.t === t) && (h === null || h === e.h)) {
 			hs.splice(i, 1);
 		}
 	}
@@ -15,8 +17,8 @@ const rm = function(hs, t, h) {
  * @callback EventBus~eventCallback
  * @param {?object} data Event data object
  * @param {object} target Target object
- * @param {string} event Event name
- * @param {string} action Event action. This is the suffix of the event being listened to
+ * @param {string} event Event name including namespace
+ * @param {?string} action Event action. This is the suffix of the event being listened to, or null if listening to the actual event.
  */
 
 /**
@@ -29,6 +31,7 @@ class EventBus {
 	 */
 	constructor() {
 		this.evts = {};
+		this._queuedHandler = null;
 	}
 
 	/**
@@ -43,7 +46,7 @@ class EventBus {
 		var i, hs, name, h;
 
 		// Detect optional parameters
-		if( typeof events == 'function' ) {
+		if (typeof events == 'function') {
 			// (events, handler, namespace)
 			namespace = handler;
 			handler = events;
@@ -51,16 +54,21 @@ class EventBus {
 			target = null;
 		}
 
-		if( !handler ) return this;
+		if (!handler) {
+			return this;
+		}
 
 		h = {t: target || null, h: handler};
 
-		if( !events ) {
+		if (!events) {
 			name = namespace || "";
 
 			hs = this.evts[name];
-			if( !hs ) this.evts[name] = [h];
-			else hs.push(h);
+			if (!hs) {
+				this.evts[name] = [h];
+			} else {
+				hs.push(h);
+			}
 
 		} else {
 			namespace = namespace ? namespace + '.' : '';
@@ -68,13 +76,15 @@ class EventBus {
 			// Handle multiple events separated by a space
 			events = events.match(/\S+/g) || [];
 
-			for( i = 0; i < events.length; i++ ) {
+			for (i = 0; i < events.length; i++) {
 				name = namespace + events[i];
 
 				hs = this.evts[name];
-
-				if( !hs ) this.evts[name] = [h];
-				else hs.push(h);
+				if (!hs) {
+					this.evts[name] = [h];
+				} else {
+					hs.push(h);
+				}
 			}
 		}
 
@@ -93,7 +103,7 @@ class EventBus {
 		var i, hs, name;
 
 		// Detect optional parameters
-		if( target === null || typeof target == 'string' ) {
+		if (target === null || typeof target == 'string') {
 			// (events, handler, namespace)
 			namespace = handler;
 			handler = events;
@@ -101,32 +111,40 @@ class EventBus {
 			target = null;
 		}
 
-		if( !events ) {
+		if (!events) {
 			name = namespace || "";
 
 			hs = this.evts[name];
 			// No event handlers for event
-			if( !hs ) return this;
+			if (!hs) {
+				return this;
+			}
 
 			rm(hs, target, handler);
 			// Delete array if empty
-			if( !hs.length ) delete this.evts[name];
+			if (!hs.length) {
+				delete this.evts[name];
+			}
 		} else {
 			namespace = namespace ? namespace + '.' : '';
 
 			// Handle multiple events separated by a space.
 			events = events.match(/\S+/g) || [];
 
-			for( i = 0; i < events.length; i++ ) {
+			for (i = 0; i < events.length; i++) {
 				name = namespace + events[i];
 
 				hs = this.evts[name];
 				// No event handlers for event
-				if( !hs ) continue;
+				if (!hs) {
+					continue;
+				}
 
 				rm(hs, target, handler);
 				// Delete array if empty
-				if( !hs.length ) delete this.evts[name];
+				if (!hs.length) {
+					delete this.evts[name];
+				}
 			}
 		}
 
@@ -136,38 +154,43 @@ class EventBus {
 	/**
 	 * Emits an event and triggers the base handler to be called, followed by any other handler bound.
 	 * @param {object} [target] Target object of the event
-	 * @param {string} event Full name of the event including namespace
+	 * @param {string} event Name of the event. May include the namespace, if the namespace parameter is not provided.
 	 * @param {object} [data] Event data object. May be modified by the base handler, but shouldn't be changed any other handler.
+	 * @param {string} [namespace] Namespace string that will be added, separated with a dot, before the event name.
 	 * @returns {this}
 	 */
-	emit(target, event, data) {
+	emit(target, event, data, namespace) {
 		var i, hs, h, sub, action;
 
 		// Detect optional parameters
-		if( typeof target == 'string' ) {
-			// (events, data)
+		if (typeof target == 'string') {
+			// (events, data, namespace)
+			namespace = data;
 			data = event;
 			event = target;
 			target = null;
 		}
 
+		event = (namespace ? namespace + '.' : '') + event;
 		sub = event;
 
-		while( true ) {
+		while (true) {
 			hs = this.evts[sub];
 
-			if( hs ) {
-				action = sub ? event.substr(sub.length + 1) : event;
+			if (hs) {
+				action = (sub ? event.substr(sub.length + 1) : event) || null;
 				i = hs.length;
-				while( i-- ) {
+				while (i--) {
 					h = hs[i];
-					if( h.t === null || h.t == target ) {
-						h.h(data, target, event, action);
+					if (h.t === null || h.t == target) {
+						this._executeHandler([data, target, event, action, h.h]);
 					}
 				}
 			}
 
-			if( !sub ) break;
+			if (!sub) {
+				break;
+			}
 
 			// Remove last namespace part
 			i = sub.lastIndexOf('.');
@@ -175,6 +198,24 @@ class EventBus {
 		}
 
 		return this;
+	}
+
+	_executeHandler(cb) {
+		if (this._queuedHandler) {
+			this._queuedHandler.push(cb);
+			return;
+		}
+
+		this._queuedHandler = [cb];
+
+		setTimeout(() => {
+			let f;
+			while (cb = this._queuedHandler.shift()) {
+				f = cb.pop();
+				f(...cb);
+			}
+			this._queuedHandler = null;
+		}, 0);
 	}
 }
 

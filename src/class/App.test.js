@@ -22,7 +22,7 @@ describe('App', () => {
 			var mc = modClass[i];
 			for (var j = 0; j < modClassQueue.length; j++) {
 				var mcq = modClassQueue[j];
-				
+
 				if (mcq.name === mc.name) {
 					modClassQueue.splice(j, 1);
 					setTimeout(() => {
@@ -80,7 +80,7 @@ describe('App', () => {
 
 			mod[name] = this;
 			insts.push(this);
-		
+
 			this.state = 'created';
 			this.name = name;
 			this.require = require;
@@ -160,7 +160,7 @@ describe('App', () => {
 		modClass = [];
 		modClassQueue = [];
 		modClassPos = 0;
-		
+
 		app = new App({
 			active: {active: "true"},
 			inactive: {active: false},
@@ -243,7 +243,7 @@ describe('App', () => {
 				c: createModule('c', ['a']),
 				d: createModule('d', ['b', 'c'])
 			}).then(result => {
-				expect(result.errors).toBe(null);				
+				expect(result.errors).toBe(null);
 				expect(result.modules.a.name).toBe('a');
 				expect(result.modules.b.name).toBe('b');
 				expect(result.modules.c.name).toBe('c');
@@ -429,7 +429,7 @@ describe('App', () => {
 		it("loads complex require chains", () => {
 			setModuleClasses([
 				{name: 'd', class: createModule('d', ['c'])},
-				{name: 'c', class: createModule('c')}		
+				{name: 'c', class: createModule('c')}
 			]);
 
 			return app.loadBundle({
@@ -443,7 +443,7 @@ describe('App', () => {
 
 		it("gives error on circular dependencies with implicitly loaded module", () => {
 			setModuleClasses([
-				{name: 'cc', class: createModule('cc', ['ca', 'cb'])}		
+				{name: 'cc', class: createModule('cc', ['ca', 'cb'])}
 			]);
 
 			return app.loadBundle({
@@ -457,7 +457,7 @@ describe('App', () => {
 
 		it("loads bundle with dependency on delayed module class resolve", () => {
 			setModuleClasses([
-				{name: 'b', class: createModule('b')}	
+				{name: 'b', class: createModule('b')}
 			], true);
 
 			return app.loadBundle({
@@ -470,7 +470,7 @@ describe('App', () => {
 
 		it("loads bundle dependant on another bundle awaiting module class", () => {
 			setModuleClasses([
-				{name: 'c', class: createModule('c')}	
+				{name: 'c', class: createModule('c')}
 			], true);
 
 			let promises = [];
@@ -494,7 +494,7 @@ describe('App', () => {
 		it("loads two bundles with shared implicit dependencies in the order they resolve", () => {
 			setModuleClasses([
 				{name: 'c', class: createModule('c')},
-				{name: 'd', class: createModule('d')}		
+				{name: 'd', class: createModule('d')}
 			], true);
 
 			let promises = [];
@@ -517,7 +517,7 @@ describe('App', () => {
 				verifyModules(['a', 'b', 'c', 'd']);
 			});
 		});
-		
+
 		it("doesn't clean implicit module when one of two dependants in separate bundles fails to load", () => {
 			setModuleClasses([
 				{name: 'c', class: createModule('c')},
@@ -580,9 +580,9 @@ describe('App', () => {
 			expect(() => app.require(['a'], spy)).toThrow();
 			expect(spy).not.toHaveBeenCalled();
 		});
-	
+
 	});
-	
+
 	describe('activate', () => {
 
 		it("reactivates deactivated module", () => {
@@ -608,9 +608,9 @@ describe('App', () => {
 				})
 			);
 		});
-	
+
 	});
-	
+
 	describe('deactivate', () => {
 
 		it("unloads dependant module on deactivation", () => {
@@ -619,7 +619,7 @@ describe('App', () => {
 				b: createModule('b', ['a'])
 			}).then(result => {
 				app.deactivate('a');
-				
+
 				verifyModules([]);
 			});
 		});
@@ -632,7 +632,7 @@ describe('App', () => {
 				d: createModule('d', ['b', 'c'])
 			}).then(result => {
 				app.deactivate('a');
-				
+
 				verifyModules([]);
 			});
 		});
@@ -646,7 +646,7 @@ describe('App', () => {
 				b: createModule('b', ['a', 'c'])
 			}).then(result => {
 				app.deactivate('a');
-				
+
 				verifyModules([]);
 			});
 		});
@@ -665,7 +665,7 @@ describe('App', () => {
 				});
 			});
 		});
-	
+
 	});
 
 });
