@@ -1,6 +1,7 @@
 /node_modules
 /coverage
 /docs
+/package-lock.json
 /yarn.lock
 
 # Build files.
