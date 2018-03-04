@@ -44,8 +44,8 @@ class App {
 		this._moduleClassCallback = opt.moduleClass || null;
 
 		// Module storage
-		this._module = {};             // Holds all ModuleInstances
-		this._moduleClass = {};        // Holds all AppModule classes
+		this._module = {}; // Holds all ModuleInstances
+		this._moduleClass = {}; // Holds all AppModule classes
 
 		// Require
 		this._catchRequire = false; // Holds required modules
@@ -84,7 +84,7 @@ class App {
 	 */
 	loadModules(moduleNames) {
 		return this._loadInstances(moduleNames)
-		.then(this._toLoadResults);
+			.then(this._toLoadResults);
 	}
 
 	/**
@@ -106,7 +106,7 @@ class App {
 	 * @private
 	 */
 	_toLoadResults(modInsts) {
-		var modules = {}, errors = null, error, modInst;
+		let modules = {}, errors = null;
 		for (let i = 0, modInst; (modInst = modInsts[i]); i++) {
 			if (modInst.error) {
 				errors = errors || {};
@@ -116,7 +116,7 @@ class App {
 			}
 		}
 
-		return {modules, errors};
+		return { modules, errors };
 	}
 
 	/**
@@ -162,42 +162,43 @@ class App {
 		}
 
 		return this._getModuleClass(modInst.name)
-		.catch(err => {
-			modInst.setState('unavailable', err);
-			return Promise.reject(modInst.error);
-		})
-		.then(modClass => {
-			let params = this._getModuleParams(modInst.name);
-			return this._createInstance(modInst, modClass, params, []);
-		})
-		.then(modInst => {
-			if (modInst.error) {
+			.catch(err => {
+				modInst.setState('unavailable', err);
 				return Promise.reject(modInst.error);
-			}
+			})
+			.then(modClass => {
+				let params = this._getModuleParams(modInst.name);
+				return this._createInstance(modInst, modClass, params, []);
+			})
+			.then(modInst => {
+				if (modInst.error) {
+					return Promise.reject(modInst.error);
+				}
 
-			// Take the blocked dependants and try to reload them
-			let deps = modInst.dependants;
-			let promises = [];
-			modInst.dependants = [];
-			for (var i = 0; i < deps.length; i++) {
-				promises.push(this._reloadInstance(this._module[deps[i]]));
-			}
+				// Take the blocked dependants and try to reload them
+				let deps = modInst.dependants;
+				let promises = [];
+				modInst.dependants = [];
+				for (var i = 0; i < deps.length; i++) {
+					promises.push(this._reloadInstance(this._module[deps[i]]));
+				}
 
-			// Wait with resolving until all dependants have loaded.
-			// Why? To allow proper testing that dependants did load.
-			return Promise.all(promises)
-			.then(() => modInst.instance)
-			.catch(() => modInst.instance);
-		});
+				// Wait with resolving until all dependants have loaded.
+				// Why? To allow proper testing that dependants did load.
+				return Promise.all(promises)
+					.then(() => modInst.instance)
+					.catch(() => modInst.instance);
+			});
 	}
 
+	// eslint-disable-next-line valid-jsdoc
 	/**
 	 * Checks if the provided module class is different from the one loaded, and if it is,
 	 * disposes the previously loaded version and replace it with a new instance.<br>
 	 * If no module class is provided, update will try fetching the module class from the server.
 	 * @param {string} moduleName Name of the module to update
 	 * @param {Class.<AppModule>} [moduleClass] Optional module class.
-	 * @returns {Promise.<AppModule, Error>} Promise of the app module instance.
+	 * returns {Promise.<AppModule, Error>} Promise of the app module instance.
 	 */
 	update(moduleName, moduleClass = null) {
 		throw new Error("Not implemented");
@@ -215,6 +216,7 @@ class App {
 	 * all modules on the initial request has been loaded.
 	 * @param {string|Array.<string>} moduleNames The name of a module, or an array of module names
 	 * @param {App~requireCallback} callback Require callback on success
+	 * @returns {this}
 	 */
 	require(moduleNames, callback) {
 		// Check if call doesn't origin from module creation inside of App
@@ -223,7 +225,7 @@ class App {
 		}
 
 		if (moduleNames && moduleNames.length) {
-			this._require = {moduleNames, callback};
+			this._require = { moduleNames, callback };
 		} else {
 			callback({});
 		}
@@ -240,7 +242,7 @@ class App {
 	 */
 	_loadInstances(modNames, loadedBy = null) {
 		// Quick escape
-		if (!modNames || !modNames.length ) {
+		if (!modNames || !modNames.length) {
 			return Promise.resolve([]);
 		}
 
@@ -283,21 +285,21 @@ class App {
 
 		if (!modInst.promise) {
 			modInst.promise = this._getModuleClass(modName)
-			.then(modClass => {
-				let params = this._getModuleParams(modInst.name);
+				.then(modClass => {
+					let params = this._getModuleParams(modInst.name);
 
-				// Check if module defaults to being deactivated
-				if (checkActiveFlag && !this._isTrue(params.active)) {
-					modInst.setState('deactivated');
+					// Check if module defaults to being deactivated
+					if (checkActiveFlag && !this._isTrue(params.active)) {
+						modInst.setState('deactivated');
+						return modInst;
+					}
+
+					return this._createInstance(modInst, modClass, params);
+				})
+				.catch(err => {
+					modInst.setState('unavailable', err);
 					return modInst;
-				}
-
-				return this._createInstance(modInst, modClass, params);
-			})
-			.catch(err => {
-				modInst.setState('unavailable', err);
-				return modInst;
-			});
+				});
 		}
 
 		return modInst.promise;
@@ -321,10 +323,10 @@ class App {
 			// Get the class. We don't cache the promise
 			// as we expect only one call per module instance
 			return this._moduleClassCallback(modName)
-			.then(modClass => {
-				this._moduleClass[modName] = modClass;
-				return modClass;
-			});
+				.then(modClass => {
+					this._moduleClass[modName] = modClass;
+					return modClass;
+				});
 		}
 
 		return Promise.reject(new Error("No module class callback available."));
@@ -334,6 +336,7 @@ class App {
 	 * Tries to create an instance of a module
 	 * @param {ModuleInstance} modInst Module instance object
 	 * @param {Class.<AppModule>} modClass AppModule class
+	 * @param {object} params Parameters to pass to modClass.
 	 * @returns {Promise.<ModuleInstance>} A promise of the module instance. Will always resolve.
 	 * @private
 	 */
@@ -342,7 +345,7 @@ class App {
 		this._catchRequire = true;
 		try {
 			modInst.instance = new modClass(this, params);
-		} catch(ex) {
+		} catch (ex) {
 			modInst.setState('error', ex);
 			return Promise.resolve(modInst);
 		}
@@ -365,7 +368,7 @@ class App {
 		// Check for circular dependencies
 		try {
 			this._checkCircularRef(modInst);
-		} catch(ex) {
+		} catch (ex) {
 			modInst.setState('circularDependency', ex);
 			return Promise.resolve(modInst);
 		}
@@ -387,7 +390,7 @@ class App {
 				try {
 					// Store error in a context that can be thrown later
 					require.callback(result.modules);
-				} catch(ex) {
+				} catch (ex) {
 					// Defer throwing the exception
 					if (ex) {
 						setTimeout(() => { throw ex; });
@@ -415,7 +418,7 @@ class App {
 	/**
 	 * Checks if a module instance is implicit and disposes it
 	 * if it has no active dependants.
-	 * @param {ModuleInstance} modInst
+	 * @param {ModuleInstance} modInst Module instance
 	 * @private
 	 */
 	_cleanImplicit(modInst) {
@@ -445,7 +448,7 @@ class App {
 
 		if (state === 'blocked') {
 			let blockedBy = {};
-			for (let i = 0; i < modInst.requires.length; i++ ) {
+			for (let i = 0; i < modInst.requires.length; i++) {
 				let depInst = this._module[modInst.requires[i]];
 				if (depInst.error) {
 					blockedBy[depInst.name] = depInst.error;
@@ -486,14 +489,14 @@ class App {
 	 */
 	_isTrue(v) {
 		switch (typeof v) {
-		case 'boolean': return v;
-		case 'number': v = v.toString();
-		case 'string':
-			v = v.toLowerCase();
-			if (v == 'false' || v == '0' || v == 'no') {
-				return false;
-			}
-			break;
+			case 'boolean': return v;
+			case 'number': v = v.toString();
+			case 'string':
+				v = v.toLowerCase();
+				if (v == 'false' || v == '0' || v == 'no') {
+					return false;
+				}
+				break;
 		}
 
 		return true;

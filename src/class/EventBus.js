@@ -58,14 +58,14 @@ class EventBus {
 			return this;
 		}
 
-		h = {t: target || null, h: handler};
+		h = { t: target || null, h: handler };
 
 		if (!events) {
 			name = namespace || "";
 
 			hs = this.evts[name];
 			if (!hs) {
-				this.evts[name] = [h];
+				this.evts[name] = [ h ];
 			} else {
 				hs.push(h);
 			}
@@ -81,7 +81,7 @@ class EventBus {
 
 				hs = this.evts[name];
 				if (!hs) {
-					this.evts[name] = [h];
+					this.evts[name] = [ h ];
 				} else {
 					hs.push(h);
 				}
@@ -183,7 +183,7 @@ class EventBus {
 				while (i--) {
 					h = hs[i];
 					if (h.t === null || h.t == target) {
-						this._executeHandler([data, target, event, action, h.h]);
+						this._executeHandler([ data, target, event, action, h.h ]);
 					}
 				}
 			}
@@ -194,7 +194,7 @@ class EventBus {
 
 			// Remove last namespace part
 			i = sub.lastIndexOf('.');
-			sub = i == -1 ?  "" : sub.substr(0, i);
+			sub = i == -1 ? "" : sub.substr(0, i);
 		}
 
 		return this;
@@ -206,7 +206,7 @@ class EventBus {
 			return;
 		}
 
-		this._queuedHandler = [cb];
+		this._queuedHandler = [ cb ];
 
 		setTimeout(() => {
 			let f;

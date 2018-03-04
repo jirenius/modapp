@@ -33,40 +33,40 @@ class ModuleInstance {
 	}
 
 	setState(state, param) {
-		switch(state) {
+		switch (state) {
 		// Initial loading. Promise has not yet resolved
-		case 'loading':
-			this.promise = null;
-		// Module is ready and this.instance is set
-		case 'ready':
-		case 'require':
-			this.error = null;
-			break;
-		// Module is deactivated
-		case 'deactivated':
-			this.error = new DeactivatedError(this.name);
-			break;
-		// Module is blocked one or more modules. Param is a blockedBy object
-		case 'blocked':
-			this.error = new BlockedError(this.name, param);
-			break;
-		// Module class is unavailable. Param is the error reason.
-		case 'unavailable':
-			this.error = new UnavailableError(this.name, param);
-			break;
-		// Module has a circular dependency
-		case 'circularDependency':
-			this.error = new CircularDependencyError(this.name, param);
-			break;
-		// Module couldn't load due to an error (most likely in module constructor). Param is the error.
-		case 'error':
-			this.error = new UnknownError(this.name, param);
-			break;
-		// Module is implicit without any dependants.
-		case 'passive':
-			this.error = null;
-			this.instance = null;
-			break;
+			case 'loading':
+				this.promise = null;
+				// Module is ready and this.instance is set
+			case 'ready':
+			case 'require':
+				this.error = null;
+				break;
+				// Module is deactivated
+			case 'deactivated':
+				this.error = new DeactivatedError(this.name);
+				break;
+				// Module is blocked one or more modules. Param is a blockedBy object
+			case 'blocked':
+				this.error = new BlockedError(this.name, param);
+				break;
+				// Module class is unavailable. Param is the error reason.
+			case 'unavailable':
+				this.error = new UnavailableError(this.name, param);
+				break;
+				// Module has a circular dependency
+			case 'circularDependency':
+				this.error = new CircularDependencyError(this.name, param);
+				break;
+				// Module couldn't load due to an error (most likely in module constructor). Param is the error.
+			case 'error':
+				this.error = new UnknownError(this.name, param);
+				break;
+				// Module is implicit without any dependants.
+			case 'passive':
+				this.error = null;
+				this.instance = null;
+				break;
 		}
 
 		if (this.error) {

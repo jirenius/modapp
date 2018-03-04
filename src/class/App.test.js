@@ -5,7 +5,6 @@ describe('App', () => {
 	let app;
 	let mod;
 	let insts;
-	let ex;
 	let modClass;
 	let modClassQueue;
 	let modClassPos;
@@ -61,7 +60,7 @@ describe('App', () => {
 
 	const getModuleClass = function(name) {
 		return new Promise((resolve, reject) => {
-			modClassQueue.push({name, resolve, reject});
+			modClassQueue.push({ name, resolve, reject });
 			if (resolveExplicitly) {
 	 			resolveModuleClasses();
 			}
@@ -73,7 +72,7 @@ describe('App', () => {
 
 		return function(app, params) {
 			if (mod[name] && mod[name].state !== 'disposed' && mod[name].state !== 'created') {
-				let err = "instance ["+ name +"] is already created with state: " + mod[name].state;
+				let err = "instance [" + name + "] is already created with state: " + mod[name].state;
 				console.error(err);
 				throw new Error(err);
 			}
@@ -113,7 +112,7 @@ describe('App', () => {
 			} else {
 				this.state = 'active';
 			}
-		}
+		};
 	};
 
 	const verifyModules = function(active) {
@@ -132,7 +131,7 @@ describe('App', () => {
 		// Expect number of active modules to equal the ones sent to the module.
 		expect(active.length).toBe(activeCount);
 
-		for (let inst of insts) {
+		for (let m of insts) {
 			if (m.state === 'created') continue;
 			if (m.state === 'disposed') {
 				// Expect module only to have been disposed once
@@ -155,19 +154,18 @@ describe('App', () => {
 
 	beforeEach(() => {
 		mod = {};
-		ex = null;
 		insts = [];
 		modClass = [];
 		modClassQueue = [];
 		modClassPos = 0;
 
 		app = new App({
-			active: {active: "true"},
-			inactive: {active: false},
-			inactive0: {active: 0},
-			inactiveString0: {active: "0"},
-			inactiveStringFalse: {active: "False"},
-			inactiveStringNO: {active: "NO"},
+			active: { active: "true" },
+			inactive: { active: false },
+			inactive0: { active: 0 },
+			inactiveString0: { active: "0" },
+			inactiveStringFalse: { active: "False" },
+			inactiveStringNO: { active: "NO" },
 		}, {
 			moduleClass: getModuleClass
 		});
@@ -195,21 +193,21 @@ describe('App', () => {
 				expect(result.modules.b.name).toBe('b');
 				expect(result.modules.c.name).toBe('c');
 
-				verifyModules(['a', 'b', 'c']);
+				verifyModules([ 'a', 'b', 'c' ]);
 			});
 		});
 
 		it('loads multiple modules in require chain', () => {
 			return app.loadBundle({
 				a: createModule('a'),
-				b: createModule('b', ['a']),
-				c: createModule('c', ['b'])
+				b: createModule('b', [ 'a' ]),
+				c: createModule('c', [ 'b' ])
 			}).then(result => {
 				expect(result.errors).toBe(null);
 				expect(result.modules.a.name).toBe('a');
 				expect(result.modules.b.name).toBe('b');
 				expect(result.modules.c.name).toBe('c');
-				verifyModules(['a', 'b', 'c']);
+				verifyModules([ 'a', 'b', 'c' ]);
 			});
 		});
 
@@ -224,31 +222,31 @@ describe('App', () => {
 
 		it('loads multiple modules in reversed require chain', () => {
 			return app.loadBundle({
-				a: createModule('a', ['b']),
-				b: createModule('b', ['c']),
+				a: createModule('a', [ 'b' ]),
+				b: createModule('b', [ 'c' ]),
 				c: createModule('c')
 			}).then(result => {
 				expect(result.errors).toBe(null);
 				expect(result.modules.c.name).toBe('c');
 				expect(result.modules.b.name).toBe('b');
 				expect(result.modules.a.name).toBe('a');
-				verifyModules(['a', 'b', 'c']);
+				verifyModules([ 'a', 'b', 'c' ]);
 			});
 		});
 
 		it('loads multiple modules in require diamond', () => {
 			return app.loadBundle({
 				a: createModule('a'),
-				b: createModule('b', ['a']),
-				c: createModule('c', ['a']),
-				d: createModule('d', ['b', 'c'])
+				b: createModule('b', [ 'a' ]),
+				c: createModule('c', [ 'a' ]),
+				d: createModule('d', [ 'b', 'c' ])
 			}).then(result => {
 				expect(result.errors).toBe(null);
 				expect(result.modules.a.name).toBe('a');
 				expect(result.modules.b.name).toBe('b');
 				expect(result.modules.c.name).toBe('c');
 				expect(result.modules.d.name).toBe('d');
-				verifyModules(['a', 'b', 'c', 'd']);
+				verifyModules([ 'a', 'b', 'c', 'd' ]);
 			});
 		});
 
@@ -269,7 +267,7 @@ describe('App', () => {
 				expect(result.errors.inactiveString0.name).toBe('DeactivatedError');
 				expect(result.errors.inactiveStringFalse.name).toBe('DeactivatedError');
 				expect(result.errors.inactiveStringNO.name).toBe('DeactivatedError');
-				verifyModules(['active', 'b']);
+				verifyModules([ 'active', 'b' ]);
 			});
 		});
 
@@ -283,24 +281,24 @@ describe('App', () => {
 				expect(Object.keys(result.errors)).toHaveLength(2);
 				expect(result.errors.a.name).toBe('UnknownError');
 				expect(result.errors.b.name).toBe('UnknownError');
-				verifyModules(['c']);
+				verifyModules([ 'c' ]);
 			});
 		});
 
 		it("loads loads modules that throws an exception in the require callback, deferring the exception", () => {
 			return app.loadBundle({
 				a: createModule('a'),
-				b: createModule('b', ['a'], null, new Error("Init error"))
+				b: createModule('b', [ 'a' ], null, new Error("Init error"))
 			}).then(result => {
 				expect(result.errors).toBe(null);
-				verifyModules(['a', 'b']);
+				verifyModules([ 'a', 'b' ]);
 			});
 		});
 
 		it("doesn't load module blocked by deactivated module", () => {
 			return app.loadBundle({
 				inactive: createModule('inactive'),
-				b: createModule('b', ['inactive'])
+				b: createModule('b', [ 'inactive' ])
 			}).then(result => {
 				expect(result.errors).not.toBe(null);
 				expect(Object.keys(result.errors)).toHaveLength(2);
@@ -315,14 +313,14 @@ describe('App', () => {
 		it("sets multiple blockedBy errors when blocked in require diamond", () => {
 			return app.loadBundle({
 				inactive: createModule('inactive'),
-				b: createModule('b', ['inactive']),
-				c: createModule('c', ['inactive']),
-				d: createModule('d', ['b', 'c'])
+				b: createModule('b', [ 'inactive' ]),
+				c: createModule('c', [ 'inactive' ]),
+				d: createModule('d', [ 'b', 'c' ])
 			}).then(result => {
 				expect(result.errors).not.toBe(null);
 				expect(Object.keys(result.errors)).toHaveLength(4);
 				expect(Object.keys(result.errors.d.blockedBy)).toHaveLength(2);
-				expect(result.errors.d.blockedBy).toHaveProperty('b')
+				expect(result.errors.d.blockedBy).toHaveProperty('b');
 				expect(result.errors.d.blockedBy).toHaveProperty('c');
 				verifyModules([]);
 			});
@@ -330,9 +328,9 @@ describe('App', () => {
 
 		it("gives error on circular dependencies", () => {
 			return app.loadBundle({
-				ca: createModule('ca', ['cc']),
-				cb: createModule('cb', ['ca']),
-				cc: createModule('cc', ['cb'])
+				ca: createModule('ca', [ 'cc' ]),
+				cb: createModule('cb', [ 'ca' ]),
+				cc: createModule('cc', [ 'cb' ])
 			}).then(result => {
 				expect(result.errors).not.toBe(null);
 				verifyModules([]);
@@ -345,42 +343,42 @@ describe('App', () => {
 
 		it("loads implicit module", () => {
 			setModuleClasses([
-				{name: 'b', class: createModule('b')}
+				{ name: 'b', class: createModule('b') }
 			]);
 
 			return app.loadBundle({
-				a: createModule('a', ['b'])
+				a: createModule('a', [ 'b' ])
 			}).then(result => {
 				expect(result.errors).toBe(null);
 				expect(result.modules.a.name).toBe('a');
 
-				verifyModules(['a', 'b']);
+				verifyModules([ 'a', 'b' ]);
 			});
 		});
 
 		it("loads chained implicit modules", () => {
 			setModuleClasses([
-				{name: 'b', class: createModule('b', ['c'])},
-				{name: 'c', class: createModule('c')}
+				{ name: 'b', class: createModule('b', [ 'c' ]) },
+				{ name: 'c', class: createModule('c') }
 			]);
 
 			return app.loadBundle({
-				a: createModule('a', ['b'])
+				a: createModule('a', [ 'b' ])
 			}).then(result => {
 				expect(result.errors).toBe(null);
 				expect(result.modules.a.name).toBe('a');
 
-				verifyModules(['a', 'b', 'c']);
+				verifyModules([ 'a', 'b', 'c' ]);
 			});
 		});
 
 		it("blocks a module requiring an unavailable module class", () => {
 			setModuleClasses([
-				{name: 'b', class: null}
+				{ name: 'b', class: null }
 			]);
 
 			return app.loadBundle({
-				a: createModule('a', ['b'])
+				a: createModule('a', [ 'b' ])
 			}).then(result => {
 				expect(Object.keys(result.errors)).toHaveLength(1);
 				expect(result.errors.a.name).toBe('BlockedError');
@@ -393,18 +391,18 @@ describe('App', () => {
 
 		it("unloads an implicitly loaded module without dependants", () => {
 			setModuleClasses([
-				{name: 'b', class: createModule('b')},
-				{name: 'c', class: null}
+				{ name: 'b', class: createModule('b') },
+				{ name: 'c', class: null }
 			]);
 
 			return app.loadBundle({
-				a: createModule('a', ['b', 'c'])
+				a: createModule('a', [ 'b', 'c' ])
 			}).then(result => {
 				expect(result.errors).not.toBe(null);
 				expect(Object.keys(result.errors)).toHaveLength(1);
 				expect(result.errors.a.name).toBe('BlockedError');
 				expect(Object.keys(result.errors.a.blockedBy)).toHaveLength(1);
-				expect(result.errors.a.blockedBy).toHaveProperty('c')
+				expect(result.errors.a.blockedBy).toHaveProperty('c');
 				expect(result.errors.a.blockedBy.c.name).toBe('UnavailableError');
 				verifyModules([]);
 			});
@@ -412,43 +410,43 @@ describe('App', () => {
 
 		it("keeps an exlicitly loaded module without dependants", () => {
 			setModuleClasses([
-				{name: 'c', class: null}
+				{ name: 'c', class: null }
 			]);
 
 			return app.loadBundle({
-				a: createModule('a', ['b', 'c']),
+				a: createModule('a', [ 'b', 'c' ]),
 				b: createModule('b')
 			}).then(result => {
 				expect(result.errors).not.toBe(null);
 				expect(Object.keys(result.errors)).toHaveLength(1);
 				expect(result.errors.a.name).toBe('BlockedError');
-				verifyModules(['b']);
+				verifyModules([ 'b' ]);
 			});
 		});
 
 		it("loads complex require chains", () => {
 			setModuleClasses([
-				{name: 'd', class: createModule('d', ['c'])},
-				{name: 'c', class: createModule('c')}
+				{ name: 'd', class: createModule('d', [ 'c' ]) },
+				{ name: 'c', class: createModule('c') }
 			]);
 
 			return app.loadBundle({
-				a: createModule('a', ['c']),
-				b: createModule('b', ['d'])
+				a: createModule('a', [ 'c' ]),
+				b: createModule('b', [ 'd' ])
 			}).then(result => {
 				expect(result.errors).toBe(null);
-				verifyModules(['a', 'b', 'c', 'd']);
+				verifyModules([ 'a', 'b', 'c', 'd' ]);
 			});
 		});
 
 		it("gives error on circular dependencies with implicitly loaded module", () => {
 			setModuleClasses([
-				{name: 'cc', class: createModule('cc', ['ca', 'cb'])}
+				{ name: 'cc', class: createModule('cc', [ 'ca', 'cb' ]) }
 			]);
 
 			return app.loadBundle({
-				ca: createModule('ca', ['cb']),
-				cb: createModule('cb', ['cc'])
+				ca: createModule('ca', [ 'cb' ]),
+				cb: createModule('cb', [ 'cc' ])
 			}).then(result => {
 				expect(result.errors).not.toBe(null);
 				verifyModules([]);
@@ -457,114 +455,114 @@ describe('App', () => {
 
 		it("loads bundle with dependency on delayed module class resolve", () => {
 			setModuleClasses([
-				{name: 'b', class: createModule('b')}
+				{ name: 'b', class: createModule('b') }
 			], true);
 
 			return app.loadBundle({
-				a: createModule('a', ['b'])
+				a: createModule('a', [ 'b' ])
 			}).then(result => {
 				expect(result.errors).toBe(null);
-				verifyModules(['a', 'b']);
+				verifyModules([ 'a', 'b' ]);
 			});
 		});
 
 		it("loads bundle dependant on another bundle awaiting module class", () => {
 			setModuleClasses([
-				{name: 'c', class: createModule('c')}
+				{ name: 'c', class: createModule('c') }
 			], true);
 
 			let promises = [];
 			promises.push(app.loadBundle({
-				a: createModule('a', ['c'])
+				a: createModule('a', [ 'c' ])
 			}));
 			promises.push(app.loadBundle({
-				b: createModule('b', ['a'])
+				b: createModule('b', [ 'a' ])
 			}));
 
 			resolveModuleClass('c');
 
 			return Promise.all(promises)
-			.then((result) => {
-				expect(result[0].errors).toBe(null);
-				expect(result[1].errors).toBe(null);
-				verifyModules(['a', 'b', 'c']);
-			});
+				.then((result) => {
+					expect(result[0].errors).toBe(null);
+					expect(result[1].errors).toBe(null);
+					verifyModules([ 'a', 'b', 'c' ]);
+				});
 		});
 
 		it("loads two bundles with shared implicit dependencies in the order they resolve", () => {
 			setModuleClasses([
-				{name: 'c', class: createModule('c')},
-				{name: 'd', class: createModule('d')}
+				{ name: 'c', class: createModule('c') },
+				{ name: 'd', class: createModule('d') }
 			], true);
 
 			let promises = [];
 			promises.push(app.loadBundle({
-				a: createModule('a', ['c', 'd'])
+				a: createModule('a', [ 'c', 'd' ])
 			}));
 			promises.push(app.loadBundle({
-				b: createModule('b', ['c'])
+				b: createModule('b', [ 'c' ])
 			}));
 
 			resolveModuleClass('c');
 			return promises[1].then((result) => {
 				expect(result.errors).toBe(null);
-				verifyModules(['b', 'c']);
+				verifyModules([ 'b', 'c' ]);
 
 				resolveModuleClass('d');
 				return promises[0];
 			}).then((result) => {
 				expect(result.errors).toBe(null);
-				verifyModules(['a', 'b', 'c', 'd']);
+				verifyModules([ 'a', 'b', 'c', 'd' ]);
 			});
 		});
 
 		it("doesn't clean implicit module when one of two dependants in separate bundles fails to load", () => {
 			setModuleClasses([
-				{name: 'c', class: createModule('c')},
-				{name: 'd', class: null},
-				{name: 'e', class: createModule('e')},
+				{ name: 'c', class: createModule('c') },
+				{ name: 'd', class: null },
+				{ name: 'e', class: createModule('e') },
 			], true);
 
 			let promises = [];
 			promises.push(app.loadBundle({
-				a: createModule('a', ['c', 'd'])
+				a: createModule('a', [ 'c', 'd' ])
 			}));
 			promises.push(app.loadBundle({
-				b: createModule('b', ['c', 'e'])
+				b: createModule('b', [ 'c', 'e' ])
 			}));
 
 			resolveModuleClass('c');
 			resolveModuleClass('d');
 			return promises[0].then(result => {
 				expect(result.errors).not.toBe(null);
-				verifyModules(['c']);
+				verifyModules([ 'c' ]);
 
 				resolveModuleClass('e');
 				return promises[1];
 			}).then(result => {
 				expect(result.errors).toBe(null);
-				verifyModules(['b', 'c', 'e']);
+				verifyModules([ 'b', 'c', 'e' ]);
 			});
 		});
 
 		it("reloads implicit module after having been previously cleaned up", () => {
 			setModuleClasses([
-				{name: 'c', class: createModule('c')},
-				{name: 'd', class: null}
+				{ name: 'c', class: createModule('c') },
+				{ name: 'd', class: null }
 			]);
 
 			return app.loadBundle({
-				a: createModule('a', ['c', 'd'])
+				a: createModule('a', [ 'c', 'd' ])
 			}).then(result => {
 				expect(result.errors).not.toBe(null);
 				verifyModules([]);
 
 				return app.loadBundle({
-					b: createModule('b', ['c'])
+					b: createModule('b', [ 'c' ])
 				});
 			}).then(result => {
 				expect(result.errors).toBe(null);
-				verifyModules(['b', 'c']);
+				verifyModules([ 'b', 'c' ]);
 			});
 		});
 
@@ -574,10 +572,10 @@ describe('App', () => {
 
 		it("throws an error when called directly", () => {
 			setModuleClasses([
-				{name: 'a', class: createModule('a')}
+				{ name: 'a', class: createModule('a') }
 			]);
 			let spy = jest.fn();
-			expect(() => app.require(['a'], spy)).toThrow();
+			expect(() => app.require([ 'a' ], spy)).toThrow();
 			expect(spy).not.toHaveBeenCalled();
 		});
 
@@ -591,7 +589,7 @@ describe('App', () => {
 			}).then(result => app.activate('inactive')
 				.then(module => {
 					expect(module.name).toBe('inactive');
-					verifyModules(['inactive']);
+					verifyModules([ 'inactive' ]);
 				})
 			);
 		});
@@ -599,12 +597,12 @@ describe('App', () => {
 		it("unblocks blocked modules in require chain when deactivated module is reactivated", () => {
 			return app.loadBundle({
 				inactive: createModule('inactive'),
-				b: createModule('b', ['inactive']),
-				c: createModule('c', ['b'])
+				b: createModule('b', [ 'inactive' ]),
+				c: createModule('c', [ 'b' ])
 			}).then(result => app.activate('inactive')
 				.then(module => {
 					expect(module.name).toBe('inactive');
-					verifyModules(['inactive', 'b', 'c']);
+					verifyModules([ 'inactive', 'b', 'c' ]);
 				})
 			);
 		});
@@ -616,7 +614,7 @@ describe('App', () => {
 		it("unloads dependant module on deactivation", () => {
 			return app.loadBundle({
 				a: createModule('a'),
-				b: createModule('b', ['a'])
+				b: createModule('b', [ 'a' ])
 			}).then(result => {
 				app.deactivate('a');
 
@@ -627,9 +625,9 @@ describe('App', () => {
 		it("unloads diamond chained dependant modules on deactivation", () => {
 			return app.loadBundle({
 				a: createModule('a'),
-				b: createModule('b', ['a']),
-				c: createModule('c', ['a']),
-				d: createModule('d', ['b', 'c'])
+				b: createModule('b', [ 'a' ]),
+				c: createModule('c', [ 'a' ]),
+				d: createModule('d', [ 'b', 'c' ])
 			}).then(result => {
 				app.deactivate('a');
 
@@ -639,11 +637,11 @@ describe('App', () => {
 
 		it("unloads dependant module that has a loaded implicit", () => {
 			setModuleClasses([
-				{name: 'c', class: createModule('c')},
+				{ name: 'c', class: createModule('c') },
 			]);
 			return app.loadBundle({
 				a: createModule('a'),
-				b: createModule('b', ['a', 'c'])
+				b: createModule('b', [ 'a', 'c' ])
 			}).then(result => {
 				app.deactivate('a');
 
@@ -654,14 +652,14 @@ describe('App', () => {
 		it("unloads dependant module on deactivation, reloading only a single instance", () => {
 			return app.loadBundle({
 				a: createModule('a'),
-				b: createModule('b', ['a'])
+				b: createModule('b', [ 'a' ])
 			}).then(result => {
 				app.deactivate('b');
 				app.activate('b').then(result => {
 					app.deactivate('a');
 					app.activate('a').then(result => {
-						verifyModules(['a', 'b']);
-					})
+						verifyModules([ 'a', 'b' ]);
+					});
 				});
 			});
 		});

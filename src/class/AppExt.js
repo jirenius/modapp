@@ -2,7 +2,6 @@
 import App from './App.js';
 import eventBus from '../eventBus.js';
 
-
 /**
  * A modular app container that extends {@link App} and adds an eventBus
  * in addition to implement the {@link Component} interface.
@@ -84,7 +83,7 @@ class AppExt extends App {
 
 	/**
 	 * Unsets a component if it matches the one set
-	 * @param {Component} component
+	 * @param {Component} component Component to unset
 	 */
 	unsetComponent(component) {
 		if (component === this._component) {
@@ -124,14 +123,9 @@ class AppExt extends App {
 	}
 
 	/**
-	 * Disposes the app.
+	 * Renders the set component
+	 * @private
 	 */
-	dispose() {
-		this.unrender();
-		this._component = null;
-	}
-
-	/** @private */
 	_renderScreen() {
 		if (this._el && this._component) {
 			this._component.render(this._el);

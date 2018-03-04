@@ -19,7 +19,7 @@
  * @param {Object.<string,*>} opt Module options provided to the App constructor as from the url query
  */
 
- /**
+/**
  * Disposes the app module, removing any items or callbacks previously registered within the constructor or
  * in the [app.require]{@link App#require} callback.<br>
  * Once disposed, no more calls will be done to the module instance.
