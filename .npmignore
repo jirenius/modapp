@@ -2,6 +2,8 @@ src
 docs
 coverage
 yarn.lock
+package-lock.json
+.vscode
 *.test.js
 .babelrc
 .gitignore
