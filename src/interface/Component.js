@@ -20,10 +20,3 @@
  * @function
  * @name Component#unrender
  */
-
-/**
- * Disposes the component and unregisters any objects or callbacks.<br>
- * Once disposed, no more calls will be done to the component. 
- * @function
- * @name Component#dispose
- */

@@ -22,5 +22,8 @@
     "jest": "^19.0.2",
     "jsdoc": "^3.4.3",
     "rimraf": "^2.6.1"
+  },
+  "dependencies": {
+    "modapp-utils": "^1.0.1"
   }
 }

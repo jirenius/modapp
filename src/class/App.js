@@ -1,7 +1,5 @@
-// Classes
 import ModuleInstance from './ModuleInstance.js';
-// Utils
-import * as uri from '../uri';
+import * as uri from 'modapp-utils/uri';
 
 /**
  * Require callback
@@ -87,6 +85,18 @@ class App {
 	loadModules(moduleNames) {
 		return this._loadInstances(moduleNames)
 		.then(this._toLoadResults);
+	}
+
+	/**
+	 * Gets a loaded and active module.
+	 * @param {string} moduleName Name of the module
+	 * @returns {object} Module instance, or undefined if it is not loaded and active.
+	 */
+	getModule(moduleName) {
+		let modInst = this._module[moduleName];
+		return modInst && modInst.state == 'ready'
+			? modInst.instance
+			: undefined;
 	}
 
 	/**

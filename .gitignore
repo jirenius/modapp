@@ -10,3 +10,6 @@
 /error
 /interface
 /*.js
+
+# Editor specifics
+.vscode/*

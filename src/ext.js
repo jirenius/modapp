@@ -8,6 +8,8 @@ import appExt from './class/AppExt.js';
 // Interface
 import './interface/AppModule.js';
 import './interface/Component.js';
+import './interface/Model.js';
+import './interface/Collection.js';
 import './interface/Readyable.js';
 
 /**
@@ -16,4 +18,4 @@ import './interface/Readyable.js';
  */
 let AppExt = appExt;
 
-export {AppExt};
+export { AppExt };

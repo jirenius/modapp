@@ -8,6 +8,8 @@ import app from './class/App.js';
 // Interface
 import './interface/AppModule.js';
 import './interface/Component.js';
+import './interface/Model.js';
+import './interface/Collection.js';
 import './interface/Readyable.js';
 
 /**
@@ -16,4 +18,4 @@ import './interface/Readyable.js';
  */
 let App = app;
 
-export {App};
+export { App };
