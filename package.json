@@ -5,7 +5,7 @@
   "main": "./index.js",
   "scripts": {
     "build": "babel src --out-dir ./",
-    "test": "jest --coverage",
+    "test": "jest src --coverage",
     "predocs": "rimraf docs/*",
     "docs": "jsdoc src -r -c jsdoc.conf -d docs",
     "eslint": "eslint src/**/*.js"
