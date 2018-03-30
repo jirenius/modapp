@@ -111,3 +111,7 @@ and discards the app module.
 Disposes the app module, removing any items or callbacks previously registered within the constructor or
 in the *app.require* callback.  
 Once disposed, no more calls will be done to the module instance.
+
+## Documentation
+
+[Markdown documentation](https://github.com/jirenius/modapp/blob/master/docs/docs.md)
