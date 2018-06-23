@@ -1,3 +1,33 @@
 {
-    "presets": ["es2015"]
+    "env": {
+        "test": {
+            "presets": [
+                ["env"]
+            ]
+        },
+        "commonjs": {
+            "presets": [
+                ["env", {
+                    "useBuiltIns": false
+                }]
+            ],
+            "ignore": [
+                "**/*.test.js"
+            ]
+        },
+        "es": {
+            "presets": [
+                ["env", {
+                    "useBuiltIns": false,
+                    "modules": false
+                }]
+            ],
+            "plugins": [
+                "external-helpers"
+            ],
+            "ignore": [
+                "**/*.test.js"
+            ]
+        }
+    }
 }

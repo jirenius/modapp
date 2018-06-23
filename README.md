@@ -79,8 +79,6 @@ app.loadBundle(bundle)
 
 ## Using modapp
 
-While the example is useless, it gives an idea of what a module is and how they can interact with one another to create SOLID application.
-
 Modules can be loaded, deactivate, and reactivated while the application is running, allowing hotloading of new features and functionality to the application. New modules will simply hook into the application using the register/unregister methods provided (`addGreeting` and `removeGreeting` in the example).
 
 Try [resgate-test-app](https://github.com/jirenius/resgate-test-app) to see modapp in use.

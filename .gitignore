@@ -5,10 +5,9 @@
 
 # Build files.
 # Put in root folder to enable 'module/obj' submodules.
-/class
-/error
-/interface
-/*.js
+/dist
+/lib
+/es
 /*.tgz
 
 # Editor specifics
