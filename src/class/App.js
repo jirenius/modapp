@@ -1,5 +1,5 @@
 import ModuleInstance from './ModuleInstance.js';
-import * as uri from 'modapp-utils/uri';
+import { uri } from 'modapp-utils';
 
 /**
  * Require callback
