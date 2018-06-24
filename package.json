@@ -47,6 +47,6 @@
     "rollup-plugin-uglify": "^4.0.0"
   },
   "dependencies": {
-    "modapp-utils": "^1.2.0"
+    "modapp-utils": "^1.2.1"
   }
 }
