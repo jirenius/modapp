@@ -49,6 +49,9 @@ with a method for unregisteration.</p>
 May be used in combination with <a href="#Component">Component</a> to tell if a component
 is ready to render without showing a loading placeholder.</p>
 </dd>
+<dt><a href="#LocaleString">LocaleString</a></dt>
+<dd><p>A locale string object that can be translated.</p>
+</dd>
 </dl>
 
 <a name="AppModule"></a>
@@ -306,6 +309,76 @@ Returns a promise to when the object is initialized and ready.
 
 **Kind**: instance method of [<code>Readyable</code>](#Readyable)  
 **Returns**: <code>Promise</code> - A promise to when the object is initialized and ready.  
+<a name="LocaleString"></a>
+
+## LocaleString
+A locale string object that can be translated.
+
+**Kind**: global interface  
+
+* [LocaleString](#LocaleString)
+    * _instance_
+        * [.translate(...var_args)](#LocaleString+translate) ⇒ <code>string</code>
+        * [.getLocale()](#LocaleString+getLocale) ⇒ <code>string</code>
+        * [.on(event, handler)](#LocaleString+on)
+        * [.off(event, [handler])](#LocaleString+off)
+    * _inner_
+        * [~localeUpdateCallback](#LocaleString..localeUpdateCallback) : <code>function</code>
+
+<a name="LocaleString+translate"></a>
+
+### localeString.translate(...var_args) ⇒ <code>string</code>
+Translates a callback handler for change events.
+
+**Kind**: instance method of [<code>LocaleString</code>](#LocaleString)  
+**Returns**: <code>string</code> - Translated string.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| ...var_args | <code>\*</code> | Arguments for value placeholders. Defined by the implementation. |
+
+<a name="LocaleString+getLocale"></a>
+
+### localeString.getLocale() ⇒ <code>string</code>
+Gets the current locale language tag. Eg. 'en', 'pt-BR', etc.
+
+**Kind**: instance method of [<code>LocaleString</code>](#LocaleString)  
+**Returns**: <code>string</code> - Locale language tag.  
+<a name="LocaleString+on"></a>
+
+### localeString.on(event, handler)
+Adds a callback handler for change events.
+
+**Kind**: instance method of [<code>LocaleString</code>](#LocaleString)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| event | <code>string</code> | Event topic. Only defined LocaleString topic is 'localeUpdate'. |
+| handler | [<code>localeUpdateCallback</code>](#LocaleString..localeUpdateCallback) | Locale update callback handler. |
+
+<a name="LocaleString+off"></a>
+
+### localeString.off(event, [handler])
+Removes a callback handler for change events.
+
+**Kind**: instance method of [<code>LocaleString</code>](#LocaleString)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| event | <code>string</code> | Event topic. Only defined LocaleString topic is 'localeUpdate'. |
+| [handler] | [<code>localeUpdateCallback</code>](#LocaleString..localeUpdateCallback) | Locale update callback handler used when calling on. |
+
+<a name="LocaleString..localeUpdateCallback"></a>
+
+### LocaleString~localeUpdateCallback : <code>function</code>
+Locale update event emitted on update of the locale.
+
+**Kind**: inner typedef of [<code>LocaleString</code>](#LocaleString)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| locale | <code>string</code> | Locale language tag of new locale. |
+
 <a name="App"></a>
 
 ## App
