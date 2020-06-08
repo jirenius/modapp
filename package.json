@@ -8,8 +8,7 @@
   "files": [
     "dist",
     "lib",
-    "es",
-    "src"
+    "es"
   ],
   "scripts": {
     "clean": "rimraf lib dist es coverage docs && mkdir docs",
