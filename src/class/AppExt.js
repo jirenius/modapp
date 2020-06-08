@@ -1,6 +1,20 @@
 // Classes
 import App from './App.js';
-import eventBus from '../eventBus.js';
+import eventBus from 'modapp-eventbus';
+
+/**
+ * EventBus is a bus for subscribing to and emitting events.
+ * @external EventBus
+ * @see {@link https://github.com/jirenius/modapp-eventbus/blob/master/docs/docs.md#EventBus|modapp-eventbus}
+ */
+
+/**
+ * Event callback
+ * @callback AppExt~eventCallback
+ * @param {?object} data Event data object
+ * @param {AppExt} target Target AppExt object
+ * @param {string} event Event name including namespace
+ */
 
 /**
  * A modular app container that extends {@link App} and adds an eventBus
@@ -40,7 +54,7 @@ class AppExt extends App {
 	/**
 	 * Attach an event handler function for one or more app events.<br>
 	 * @param {?string} events One or more space-separated events. Null means any event.
-	 * @param {EventBus~eventCallback} handler A function to execute when the event is emitted.
+	 * @param {AppExt~eventCallback} handler A function to execute when the event is emitted.
 	 */
 	on(events, handler) {
 		this._eventBus.on(this, events, handler, this._eventBusNamespace);
@@ -49,7 +63,7 @@ class AppExt extends App {
 	/**
 	 * Remove an app event handler.
 	 * @param {?string} events One or more space-separated events. Null means any event.
-	 * @param {function} [handler] An optional handler function. The handler will only be remove if it is the same handler.
+	 * @param {AppExt~eventCallback} [handler] An optional handler function. The handler will only be remove if it is the same handler.
 	 */
 	off(events, handler) {
 		this._eventBus.off(this, events, handler, this._eventBusNamespace);
