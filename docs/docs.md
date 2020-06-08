@@ -8,7 +8,12 @@
 <dd><p>A modular app container that extends <a href="#App">App</a> and adds an eventBus
 in addition to implement the <a href="#Component">Component</a> interface.</p>
 </dd>
-<dt><a href="#EventBus">EventBus</a></dt>
+</dl>
+
+## External
+
+<dl>
+<dt><a href="#external_EventBus">EventBus</a></dt>
 <dd><p>EventBus is a bus for subscribing to and emitting events.</p>
 </dd>
 </dl>
@@ -566,14 +571,17 @@ in addition to implement the [Component](#Component) interface.
 
 * [AppExt](#AppExt)
     * [new AppExt([moduleConfig], [opt])](#new_AppExt_new)
-    * [.eventBus](#AppExt+eventBus)
-    * [.on(events, handler)](#AppExt+on)
-    * [.off(events, [handler])](#AppExt+off)
-    * [.setComponent(component)](#AppExt+setComponent)
-    * [.unsetComponent(component)](#AppExt+unsetComponent)
-    * [.hasComponent()](#AppExt+hasComponent) ⇒ <code>boolean</code>
-    * [.render(el)](#AppExt+render) ⇒ <code>this</code>
-    * [.unrender()](#AppExt+unrender)
+    * _instance_
+        * [.eventBus](#AppExt+eventBus)
+        * [.on(events, handler)](#AppExt+on)
+        * [.off(events, [handler])](#AppExt+off)
+        * [.setComponent(component)](#AppExt+setComponent)
+        * [.unsetComponent(component)](#AppExt+unsetComponent)
+        * [.hasComponent()](#AppExt+hasComponent) ⇒ <code>boolean</code>
+        * [.render(el)](#AppExt+render) ⇒ <code>this</code>
+        * [.unrender()](#AppExt+unrender)
+    * _inner_
+        * [~eventCallback](#AppExt..eventCallback) : <code>function</code>
 
 <a name="new_AppExt_new"></a>
 
@@ -591,7 +599,7 @@ or "0", or has value false or 0, it will automatically be deactivated on load.
 | [opt] | <code>object</code> | App configuration |
 | [opt.moduleClass] | [<code>moduleClassCallback</code>](#App..moduleClassCallback) | Callback for fetching the [AppModule](#AppModule) class for a given module name. |
 | [opt.queryNamespace] | <code>string</code> | Namespace prefix for query params. Eg. 'mod' for ?mod.login.auto=true . Defaults to no namespace. |
-| [opt.eventBus] | [<code>EventBus</code>](#EventBus) | Event bus. |
+| [opt.eventBus] | <code>EventBus</code> | Event bus. |
 | [opt.eventBusNamespace] | <code>string</code> | Namespace prefix for the event bus. Defaults to 'app'. |
 
 <a name="AppExt+eventBus"></a>
@@ -610,7 +618,7 @@ Attach an event handler function for one or more app events.<br>
 | Param | Type | Description |
 | --- | --- | --- |
 | events | <code>string</code> | One or more space-separated events. Null means any event. |
-| handler | [<code>eventCallback</code>](#EventBus..eventCallback) | A function to execute when the event is emitted. |
+| handler | [<code>eventCallback</code>](#AppExt..eventCallback) | A function to execute when the event is emitted. |
 
 <a name="AppExt+off"></a>
 
@@ -622,7 +630,7 @@ Remove an app event handler.
 | Param | Type | Description |
 | --- | --- | --- |
 | events | <code>string</code> | One or more space-separated events. Null means any event. |
-| [handler] | <code>function</code> | An optional handler function. The handler will only be remove if it is the same handler. |
+| [handler] | [<code>eventCallback</code>](#AppExt..eventCallback) | An optional handler function. The handler will only be remove if it is the same handler. |
 
 <a name="AppExt+setComponent"></a>
 
@@ -674,80 +682,23 @@ Unrenders the app
 
 **Kind**: instance method of [<code>AppExt</code>](#AppExt)  
 **Implements**: [<code>unrender</code>](#Component+unrender)  
-<a name="EventBus"></a>
+<a name="AppExt..eventCallback"></a>
 
-## EventBus
-EventBus is a bus for subscribing to and emitting events.
-
-**Kind**: global class  
-
-* [EventBus](#EventBus)
-    * [new EventBus()](#new_EventBus_new)
-    * _instance_
-        * [.on([target], events, handler, [namespace])](#EventBus+on) ⇒ <code>this</code>
-        * [.off([target], events, [handler], [namespace])](#EventBus+off) ⇒ <code>this</code>
-        * [.emit([target], event, [data], [namespace])](#EventBus+emit) ⇒ <code>this</code>
-    * _inner_
-        * [~eventCallback](#EventBus..eventCallback) : <code>function</code>
-
-<a name="new_EventBus_new"></a>
-
-### new EventBus()
-Creates an event bus.
-
-<a name="EventBus+on"></a>
-
-### eventBus.on([target], events, handler, [namespace]) ⇒ <code>this</code>
-Attach an event handler function for one or more events.
-
-**Kind**: instance method of [<code>EventBus</code>](#EventBus)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| [target] | <code>object</code> | An optional target object. The handler will only be called if target matches the target of the emitted event. |
-| events | <code>string</code> | One or more space-separated events (eg. 'disconnect'). Null or empty means any event. |
-| handler | [<code>eventCallback</code>](#EventBus..eventCallback) | A function to execute when the event is emitted. |
-| [namespace] | <code>string</code> | Namespace string that will be added, separated with a dot, to every event name. If no events is null, only events with that namespace will be affected. |
-
-<a name="EventBus+off"></a>
-
-### eventBus.off([target], events, [handler], [namespace]) ⇒ <code>this</code>
-Remove an event handler.
-
-**Kind**: instance method of [<code>EventBus</code>](#EventBus)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| [target] | <code>object</code> | An optional target object. The handler will only be removed if target matches the target of the handler. |
-| events | <code>string</code> | One or more space-separated events (eg. 'disconnect'). Null or empty means any event. |
-| [handler] | <code>function</code> | An option handler function. The handler will only be remove if it is the same handler. |
-| [namespace] | <code>string</code> | Namespace string that will be added, separated with a dot, to every event name. |
-
-<a name="EventBus+emit"></a>
-
-### eventBus.emit([target], event, [data], [namespace]) ⇒ <code>this</code>
-Emits an event and triggers the base handler to be called, followed by any other handler bound.
-
-**Kind**: instance method of [<code>EventBus</code>](#EventBus)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| [target] | <code>object</code> | Target object of the event |
-| event | <code>string</code> | Name of the event. May include the namespace, if the namespace parameter is not provided. |
-| [data] | <code>object</code> | Event data object. May be modified by the base handler, but shouldn't be changed any other handler. |
-| [namespace] | <code>string</code> | Namespace string that will be added, separated with a dot, before the event name. |
-
-<a name="EventBus..eventCallback"></a>
-
-### EventBus~eventCallback : <code>function</code>
+### AppExt~eventCallback : <code>function</code>
 Event callback
 
-**Kind**: inner typedef of [<code>EventBus</code>](#EventBus)  
+**Kind**: inner typedef of [<code>AppExt</code>](#AppExt)  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | data | <code>object</code> | Event data object |
-| target | <code>object</code> | Target object |
+| target | [<code>AppExt</code>](#AppExt) | Target AppExt object |
 | event | <code>string</code> | Event name including namespace |
-| action | <code>string</code> | Event action. This is the suffix of the event being listened to, or null if listening to the actual event. |
 
+<a name="external_EventBus"></a>
+
+## EventBus
+EventBus is a bus for subscribing to and emitting events.
+
+**Kind**: global external  
+**See**: [modapp-eventbus](https://github.com/jirenius/modapp-eventbus/blob/master/docs/docs.md#EventBus)  
