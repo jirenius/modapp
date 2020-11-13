@@ -43,7 +43,7 @@ class Greetings {
 	dispose() {} // Nothing to dispose
 }
 
-// A module for swedish greetings
+// A module for english greetings
 class EnglishGreeting {
 	constructor(app, params) {
 		this.app = app;
