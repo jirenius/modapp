@@ -87,10 +87,13 @@ describe('App', () => {
 				this.disposeCalled = false;
 				this.initCalled = false;
 				this.module = null;
+				this.disposeCallCount = 0;
+				this.initCallCount = 0;
 
 				this.dispose = jest.fn(() => {
 					this.disposeCalled = true;
 					this.state = 'disposed';
+					this.disposeCallCount++;
 				});
 
 				this.init = jest.fn(module => {
@@ -98,6 +101,7 @@ describe('App', () => {
 					this.module = module;
 
 					this.initCalled = true;
+					this.initCallCount++;
 
 					if (initEx) {
 						throw initEx;
@@ -118,10 +122,10 @@ describe('App', () => {
 
 		const verifyModules = function(active) {
 			// Check active count
-			let activeCount = 0, m;
+			let activeCount = 0;
 
 			for (let k in mod) {
-				m = mod[k];
+				let m = mod[k];
 
 				if (m && m.state === 'active') {
 					// Expect the active module to actually be active.
@@ -132,22 +136,22 @@ describe('App', () => {
 			// Expect number of active modules to equal the ones sent to the module.
 			expect(active.length).toBe(activeCount);
 
-			for (let m of insts) {
-				if (m.state === 'created') continue;
-				if (m.state === 'disposed') {
+			for (let inst of insts) {
+				if (inst.state === 'created') continue;
+				if (inst.state === 'disposed') {
 					// Expect module only to have been disposed once
-					expect(m.dispose).toHaveBeenCalledTimes(1);
+					expect(inst.disposeCallCount).toBe(1);
 				}
 
-				if (m.require) {
+				if (inst.require) {
 					// Expect init method to only have been called once
-					expect(m.init).toHaveBeenCalledTimes(1);
+					expect(inst.initCallCount).toBe(1);
 					// Expect the number of modules equal the number of modules that was required.
-					expect(Object.keys(m.module)).toHaveLength(m.require.length);
+					expect(Object.keys(inst.module)).toHaveLength(inst.require.length);
 					// Expect the modules provided to the init method to equal the ones required.
-					for (let r of m.require) {
-						expect(m.module).toHaveProperty(r);
-						expect(m.module[r].name).toBe(r);
+					for (let r of inst.require) {
+						expect(inst.module).toHaveProperty(r);
+						expect(inst.module[r].name).toBe(r);
 					}
 				}
 			}

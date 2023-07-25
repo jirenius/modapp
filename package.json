@@ -1,6 +1,6 @@
 {
   "name": "modapp",
-  "version": "2.6.0",
+  "version": "2.6.1",
   "description": "A thin framework for building completely modular web applications.",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -39,13 +39,13 @@
     "cross-env": "^7.0.2",
     "eslint": "^7.13.0",
     "jest": "^26.6.3",
-    "jsdoc-to-markdown": "^6.0.1",
+    "jsdoc-to-markdown": "^8.0.0",
     "rimraf": "^3.0.2",
     "rollup": "^2.79.1",
     "rollup-plugin-terser": "^6.1.0"
   },
   "dependencies": {
-    "modapp-eventbus": "^1.8.0",
+    "modapp-eventbus": "^1.8.1",
     "modapp-utils": "^1.8.0"
   }
 }
