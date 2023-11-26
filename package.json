@@ -1,6 +1,6 @@
 {
   "name": "modapp",
-  "version": "2.6.1",
+  "version": "2.6.2",
   "description": "A thin framework for building completely modular web applications.",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -45,7 +45,7 @@
     "rollup-plugin-terser": "^6.1.0"
   },
   "dependencies": {
-    "modapp-eventbus": "^1.8.1",
+    "modapp-eventbus": "^1.8.2",
     "modapp-utils": "^1.8.0"
   }
 }
