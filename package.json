@@ -5,18 +5,21 @@
   "main": "lib/index.js",
   "module": "es/index.js",
   "jsnext:main": "es/index.js",
+  "types": "types/index.d.ts",
   "files": [
     "dist",
     "lib",
-    "es"
+    "es",
+    "types"
   ],
   "scripts": {
-    "clean": "rimraf lib dist es coverage docs && mkdir docs",
-    "build": "npm run clean && npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min && npm run build:docs",
+    "clean": "rimraf lib dist es types coverage docs && mkdir docs",
+    "build": "npm run clean && npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min && npm run build:types && npm run build:docs",
     "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
     "build:es": "cross-env BABEL_ENV=es babel src --out-dir es",
     "build:umd": "cross-env BABEL_ENV=es NODE_ENV=development rollup src/index.js --config --sourcemap --file dist/modapp.js",
     "build:umd:min": "cross-env BABEL_ENV=es NODE_ENV=production rollup src/index.js --config --file dist/modapp.min.js",
+    "build:types": "tsc",
     "build:docs": "jsdoc2md -f ./src/class/App.js -f ./src/class/AppExt.js -f ./src/interface/AppModule.js -f ./src/interface/Component.js -f ./src/interface/Model.js -f ./src/interface/Collection.js -f ./src/interface/Readyable.js -f ./src/interface/LocaleString.js > ./docs/docs.md",
     "eslint": "eslint src/**/*.js",
     "jest": "jest src --coverage",
@@ -42,7 +45,8 @@
     "jsdoc-to-markdown": "^8.0.0",
     "rimraf": "^3.0.2",
     "rollup": "^2.79.1",
-    "rollup-plugin-terser": "^6.1.0"
+    "rollup-plugin-terser": "^6.1.0",
+    "typescript": "^5.0.4"
   },
   "dependencies": {
     "modapp-eventbus": "^1.8.2",
