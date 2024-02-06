@@ -36,12 +36,14 @@ class App {
 	 * @param {object} [opt] App configuration
 	 * @param {App~moduleClassCallback} [opt.moduleClass] Callback for fetching the {@link AppModule} class for a given module name.
 	 * @param {string} [opt.queryNamespace] Namespace prefix for query params. Eg. 'mod' for ?mod.login.auto=true . Defaults to no namespace.
+	 * @param {object} [opt.props] App properties available for all modules through the props property.
 	 */
 	constructor(moduleConfig, opt = {}) {
 		// Module configuration
 		this._moduleConfig = moduleConfig || {};
 		this._query = uri.getQuery(opt.queryNamespace || null);
 		this._moduleClassCallback = opt.moduleClass || null;
+		this._props = opt.props || {};
 
 		// Module storage
 		this._module = {}; // Holds all ModuleInstances
@@ -50,6 +52,14 @@ class App {
 		// Require
 		this._catchRequire = false; // Holds required modules
 		this._require = null;
+	}
+
+	/**
+	 * App properties.
+	 */
+	get props() {
+		// Shallow copy the props to prevent using them to pass data between modules.
+		return Object.assign({}, this._props);
 	}
 
 	/**
