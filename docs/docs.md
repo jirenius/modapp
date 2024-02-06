@@ -394,6 +394,7 @@ A modular app container loading, storing, and linking app modules together.
 * [App](#App)
     * [new App([moduleConfig], [opt])](#new_App_new)
     * _instance_
+        * [.props](#App+props)
         * [.loadBundle(bundle)](#App+loadBundle) ⇒ [<code>Promise.&lt;loadResults&gt;</code>](#App..loadResults)
         * [.loadModules(moduleNames)](#App+loadModules) ⇒ [<code>Promise.&lt;loadResults&gt;</code>](#App..loadResults)
         * [.getModule(moduleName)](#App+getModule) ⇒ <code>object</code>
@@ -422,7 +423,14 @@ or "0", or has value false or 0, it will automatically be deactivated on load.
 | [opt] | <code>object</code> | App configuration |
 | [opt.moduleClass] | [<code>moduleClassCallback</code>](#App..moduleClassCallback) | Callback for fetching the [AppModule](#AppModule) class for a given module name. |
 | [opt.queryNamespace] | <code>string</code> | Namespace prefix for query params. Eg. 'mod' for ?mod.login.auto=true . Defaults to no namespace. |
+| [opt.props] | <code>object</code> | App properties available for all modules through the props property. |
 
+<a name="App+props"></a>
+
+### app.props
+App properties.
+
+**Kind**: instance property of [<code>App</code>](#App)  
 <a name="App+loadBundle"></a>
 
 ### app.loadBundle(bundle) ⇒ [<code>Promise.&lt;loadResults&gt;</code>](#App..loadResults)
@@ -599,6 +607,7 @@ or "0", or has value false or 0, it will automatically be deactivated on load.
 | [opt] | <code>object</code> | App configuration |
 | [opt.moduleClass] | [<code>moduleClassCallback</code>](#App..moduleClassCallback) | Callback for fetching the [AppModule](#AppModule) class for a given module name. |
 | [opt.queryNamespace] | <code>string</code> | Namespace prefix for query params. Eg. 'mod' for ?mod.login.auto=true . Defaults to no namespace. |
+| [opt.props] | <code>object</code> | App properties available for all modules through the props property. |
 | [opt.eventBus] | <code>EventBus</code> | Event bus. |
 | [opt.eventBusNamespace] | <code>string</code> | Namespace prefix for the event bus. Defaults to 'app'. |
 
