@@ -33,7 +33,8 @@ class AppExt extends App {
 	 * @param {object} [opt] App configuration
 	 * @param {App~moduleClassCallback} [opt.moduleClass] Callback for fetching the {@link AppModule} class for a given module name.
 	 * @param {string} [opt.queryNamespace] Namespace prefix for query params. Eg. 'mod' for ?mod.login.auto=true . Defaults to no namespace.
-	  * @param {EventBus} [opt.eventBus] Event bus.
+	 * @param {object} [opt.props] App properties available for all modules through the props property.
+	 * @param {EventBus} [opt.eventBus] Event bus.
 	 * @param {string} [opt.eventBusNamespace] Namespace prefix for the event bus. Defaults to 'app'.
 	 */
 	constructor(moduleConfig, opt = {}) {
